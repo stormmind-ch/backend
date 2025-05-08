@@ -15,10 +15,8 @@ public class SydneySweeneyFetcher extends AbstractOpenMeteoFetcher {
     public SydneySweeneyFetcher() {}
 
     public WeatherDataDTO sydneySweeneyFetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
-        URL forecastUrl = buildUrl(centroidMunicipal, 0);
-        List<WeatherValueDTO> forecastValues = List.of(this.fetchData(forecastUrl));
-        List<WeatherValueDTO> archiveValues = List.of();
 
+        WeatherDataDTO weatherDataDTO = new FNNFetcher().vanillaFetch(targetMunicipal, centroidMunicipal);
 
         /**
          * weatherData for previous 4 weeks [w-4,w-3,w-2,w-1]
@@ -26,16 +24,10 @@ public class SydneySweeneyFetcher extends AbstractOpenMeteoFetcher {
         for(int i = 1; i <= 4; i++){
             URL url = buildUrl(centroidMunicipal,i);
             WeatherValueDTO weatherValueDTO = this.fetchData(url);
-            archiveValues.addFirst(weatherValueDTO);
+            weatherDataDTO.archive().addFirst(weatherValueDTO);
         }
 
-        return new WeatherDataDTO(
-                targetMunicipal.name(),
-                centroidMunicipal.name(),
-                forecastValues,
-                archiveValues,
-                List.of()
-        );
+        return weatherDataDTO;
     }
 
 }
