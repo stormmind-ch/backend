@@ -24,6 +24,9 @@ dependencies {
 	implementation 'ai.djl:api:0.31.1'
 	implementation 'ai.djl.pytorch:pytorch-engine:0.31.1'
 	implementation 'ai.djl.pytorch:pytorch-model-zoo:0.31.1'
+	// implementation 'com.opencsv:opencsv:5.9'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+	implementation 'org.apache.httpcomponents:httpcore:4.4.16'
 }
 
 tasks.named('test') {
