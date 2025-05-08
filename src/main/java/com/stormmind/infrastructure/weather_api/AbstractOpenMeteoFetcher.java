@@ -53,8 +53,6 @@ public class AbstractOpenMeteoFetcher{
             } else {
                 InputStreamReader reader = new InputStreamReader(url.openStream());
 
-                System.out.println(url);
-
                 JsonElement parsed = JsonParser.parseReader(reader);
 
                 JsonObject bigJsonObject = parsed.getAsJsonObject();
@@ -109,7 +107,6 @@ public class AbstractOpenMeteoFetcher{
         Duration week = this.getWeek(offsetInWeeks);
         try {
             URIBuilder uriBuilder = getUriBuilder(centroidMunicipal, offsetInWeeks, week);
-            System.out.println("Built: "+uriBuilder.build());
             return uriBuilder.build().toURL();
         } catch (MalformedURLException | URISyntaxException e) {
             e.printStackTrace();
@@ -118,11 +115,6 @@ public class AbstractOpenMeteoFetcher{
     }
 
     private URIBuilder getUriBuilder(Municipality centroidMunicipal, int offsetInWeeks, Duration week) {
-        System.out.println("SCHEME:       " + scheme);
-        System.out.println("HOST:         " + (offsetInWeeks > 2 ? archivHost : forecastHost));
-        System.out.println("PATH:         " + (offsetInWeeks > 2 ? archivPath : forecastPath));
-        System.out.println("PARAMETER:    " + parameter);
-        System.out.println("API-KEY:      " + apiKey);
         URIBuilder uriBuilder = new URIBuilder();
         uriBuilder.setScheme(scheme);
         uriBuilder.setHost(offsetInWeeks > 2 ? archivHost : forecastHost);

@@ -14,6 +14,16 @@ import org.springframework.context.ConfigurableApplicationContext;
 public class StormmindApplication {
 
 	public static void main(String[] args) {
+		SpringApplication.run(StormmindApplication.class, args);
+	}
+
+}
+
+/*
+@SpringBootApplication
+public class StormmindApplication {
+
+	public static void main(String[] args) {
 		ConfigurableApplicationContext context = SpringApplication.run(StormmindApplication.class, args);
 
 		FNNFetcher fetcher = context.getBean(FNNFetcher.class);
@@ -32,4 +42,4 @@ public class StormmindApplication {
 		System.out.println("ana: "+ana);
 	}
 
-}
+}*/
