@@ -1,6 +1,7 @@
 package com.stormmind.infrastructure.weather_api;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
@@ -35,6 +36,10 @@ public class AbstractOpenMeteoFetcher{
     String archivPath;
     @Value("${api.key}")
     String apiKey;
+    @Value("${url.parameterGround}")
+    String parameterGround;
+    @Value("${url.parameter}")
+    String parameter;
 
     public WeatherValueDTO fetchData(URL url){
         try {
@@ -48,10 +53,16 @@ public class AbstractOpenMeteoFetcher{
             } else {
                 InputStreamReader reader = new InputStreamReader(url.openStream());
 
-                JsonObject jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+                System.out.println(url);
 
-                List<Double> temperature_list = new Gson().fromJson(
-                        jsonObject.getAsJsonArray("soil_temperature_0_to_100cm_mean"), new TypeToken<List<Double>>() {}.getType()
+                JsonElement parsed = JsonParser.parseReader(reader);
+
+                JsonObject bigJsonObject = parsed.getAsJsonObject();
+
+                JsonObject jsonObject = bigJsonObject.getAsJsonObject("daily");
+
+                List<Double> temperature_list = new Gson().fromJson(/*soil_temperature_0_to_100cm_mean*/
+                        jsonObject.getAsJsonArray("temperature_2m_mean"), new TypeToken<List<Double>>() {}.getType()
                 );
                 List<Double> rain_list = new Gson().fromJson(
                         jsonObject.getAsJsonArray("rain_sum"), new TypeToken<List<Double>>() {}.getType()
@@ -94,10 +105,11 @@ public class AbstractOpenMeteoFetcher{
          * since the historical weather data api has a five-day delay we use weather forecast for previous and next week
          * and historical weather data otherwise.
          */
-        Boolean useArchiveUrl = offsetInWeeks > 2;
+        ;
         Duration week = this.getWeek(offsetInWeeks);
         try {
-            URIBuilder uriBuilder = getUriBuilder(centroidMunicipal, useArchiveUrl, week);
+            URIBuilder uriBuilder = getUriBuilder(centroidMunicipal, offsetInWeeks, week);
+            System.out.println("Built: "+uriBuilder.build());
             return uriBuilder.build().toURL();
         } catch (MalformedURLException | URISyntaxException e) {
             e.printStackTrace();
@@ -105,15 +117,27 @@ public class AbstractOpenMeteoFetcher{
         return null;
     }
 
-    private URIBuilder getUriBuilder(Municipality centroidMunicipal, Boolean useArchiveUrl, Duration week) {
+    private URIBuilder getUriBuilder(Municipality centroidMunicipal, int offsetInWeeks, Duration week) {
+        System.out.println("SCHEME:       " + scheme);
+        System.out.println("HOST:         " + (offsetInWeeks > 2 ? archivHost : forecastHost));
+        System.out.println("PATH:         " + (offsetInWeeks > 2 ? archivPath : forecastPath));
+        System.out.println("PARAMETER:    " + parameter);
+        System.out.println("API-KEY:      " + apiKey);
         URIBuilder uriBuilder = new URIBuilder();
         uriBuilder.setScheme(scheme);
-        uriBuilder.setHost(useArchiveUrl ? archivHost : forecastHost);
-        uriBuilder.setPath(useArchiveUrl ? archivPath : forecastPath);
-        uriBuilder.setParameter("lat", String.valueOf(centroidMunicipal.coordinates().latitude()));
-        uriBuilder.setParameter("lon", String.valueOf(centroidMunicipal.coordinates().longitude()));
-        uriBuilder.setParameter("start", week.start());
-        uriBuilder.setParameter("end", week.end());
+        uriBuilder.setHost(offsetInWeeks > 2 ? archivHost : forecastHost);
+        uriBuilder.setPath(offsetInWeeks > 2 ? archivPath : forecastPath);
+        uriBuilder.setParameter("latitude", String.valueOf(centroidMunicipal.coordinates().latitude()));
+        uriBuilder.setParameter("longitude", String.valueOf(centroidMunicipal.coordinates().longitude()));
+        if(offsetInWeeks > 2){
+            uriBuilder.setParameter("start_date", week.start());
+            uriBuilder.setParameter("end_date", week.end());
+        }
+        uriBuilder.setParameter("daily", parameter);
+        if(offsetInWeeks == 2){
+            uriBuilder.setParameter("past_days", "7");
+            uriBuilder.setParameter("forecast_days", "0");
+        }
         uriBuilder.setParameter("apikey", apiKey);
         return uriBuilder;
     }

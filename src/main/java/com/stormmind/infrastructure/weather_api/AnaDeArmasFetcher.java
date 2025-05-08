@@ -3,6 +3,7 @@ package com.stormmind.infrastructure.weather_api;
 import com.stormmind.domain.Municipality;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
+import org.springframework.stereotype.Component;
 
 import java.net.URL;
 import java.util.List;
@@ -13,14 +14,18 @@ import java.util.List;
  *  -4,  -3,  -2,  -1,  -0
  * -56, -55, -54, -53, -52
  */
-
+@Component
 public class AnaDeArmasFetcher extends AbstractOpenMeteoFetcher {
 
-    public AnaDeArmasFetcher() {}
+    private SydneySweeneyFetcher sydney;
+
+    public AnaDeArmasFetcher(SydneySweeneyFetcher sydneySweeneyFetcher) {
+        this.sydney = sydneySweeneyFetcher;
+    }
 
     public WeatherDataDTO anaDeArmasFetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
 
-        WeatherDataDTO weatherDataDTO = new SydneySweeneyFetcher().sydneySweeneyFetch(targetMunicipal, centroidMunicipal);
+        WeatherDataDTO weatherDataDTO = sydney.sydneySweeneyFetch(targetMunicipal, centroidMunicipal);
 
         /**
          * weatherData for the -5x weeks.

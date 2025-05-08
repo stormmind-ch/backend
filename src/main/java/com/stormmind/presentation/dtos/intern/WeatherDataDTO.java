@@ -1,5 +1,6 @@
 package com.stormmind.presentation.dtos.intern;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,8 +16,8 @@ import java.util.List;
 public record WeatherDataDTO(
         String municipal,
         String centroidMunicipal,
-        List<WeatherValueDTO> forecast,
-        List<WeatherValueDTO> archive,
-        List<WeatherValueDTO> history
+        ArrayList<WeatherValueDTO> forecast,
+        ArrayList<WeatherValueDTO> archive,
+        ArrayList<WeatherValueDTO> history
 ) {}
 
