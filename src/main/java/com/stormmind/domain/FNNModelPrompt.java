@@ -1,9 +1,5 @@
 package com.stormmind.domain;
 
-/*
-- sum weekly rain
-- avg weekly sun
-- avg weekly temp
- */
-public record FNNModelPrompt() {
+
+public record FNNModelPrompt (float temperature_mean, float sun_mean, float rain_sum) implements AIPrompt{
 }

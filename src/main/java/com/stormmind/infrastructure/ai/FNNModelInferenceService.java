@@ -1,7 +1,6 @@
 package com.stormmind.infrastructure.ai;
 
 import ai.djl.MalformedModelException;
-import ai.djl.ndarray.types.DataType;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
@@ -13,6 +12,8 @@ import ai.djl.inference.Predictor;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ZooModel;
 import ai.djl.repository.zoo.ModelZoo;
+import com.stormmind.domain.AIPrompt;
+import com.stormmind.domain.FNNModelPrompt;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Service;
@@ -22,24 +23,18 @@ import java.nio.file.Paths;
 @Service
 public class FNNModelInferenceService implements ModelInferenceService {
 
-    private ZooModel<float[], float[]> model;
+    private ZooModel<FNNModelPrompt, Float> model;
 
     @PostConstruct
     public void init() throws ModelNotFoundException, MalformedModelException, IOException {
-        Criteria<float[], float[]> criteria = Criteria.builder()
-                .setTypes(float[].class, float[].class)
+        Criteria<FNNModelPrompt, Float> criteria = Criteria.builder()
+                .setTypes(FNNModelPrompt.class, Float.class)
                 .optModelPath(Paths.get("src/main/java/com/stormmind/infrastructure/ai/models"))
                 .optModelName("fnn_temp_sun_rain")
                 .optTranslator(new FNNTranslator())
                 .build();
 
         model = ModelZoo.loadModel(criteria);
-    }
-
-    public float[] predict(float[] input) throws  TranslateException {
-        try (Predictor<float[], float[]> predictor = model.newPredictor()) {
-            return predictor.predict(input);
-        }
     }
 
     /**
@@ -52,19 +47,28 @@ public class FNNModelInferenceService implements ModelInferenceService {
             model.close();
         }
     }
+
+    @Override
+    public float predict(AIPrompt inputData) throws TranslateException {
+        try (Predictor<FNNModelPrompt, Float> predictor = model.newPredictor()) {
+            return predictor.predict((FNNModelPrompt) inputData);
+        }
+    }
+
     /***
      * This Translator is needed to convert an input which is a Java float[] to an NDArray, so that the model can
      * work with it. Additionally, it performs a z-score normalization.
      */
-    private static class FNNTranslator implements Translator<float[], float[]> {
+    private static class FNNTranslator implements Translator<FNNModelPrompt, Float> {
 
         private  final float[] MEAN = {8.7132e+00f, 2.8966e+04f, 2.4517e+01f};
         private  final float[] STD = {7.3103e+00f, 1.0314e+04f, 2.8042e+01f};
 
         @Override
-        public NDList processInput(TranslatorContext ctx, float[] input) {
+        public NDList processInput(TranslatorContext ctx, FNNModelPrompt input) {
             NDManager manager = ctx.getNDManager();
-            NDArray inputArray = manager.create(input);
+            float[] floatsInput = fnnModelPromptToFLoatArray(input);
+            NDArray inputArray = manager.create(floatsInput);
             NDArray meanArray = manager.create(MEAN);
             NDArray stdArray = manager.create(STD);
 
@@ -76,17 +80,26 @@ public class FNNModelInferenceService implements ModelInferenceService {
          * This method handles the output of the model. It applies the softmax
          * (<a href="https://en.wikipedia.org/wiki/Softmax_function">Softmax in Wikipedia</a>) activation function of,
          * the last value int the input List.
-         * @param ctx the toolkit used for post-processing
+         *
+         * @param ctx  the toolkit used for post-processing
          * @param list the output NDList after inference, usually immutable in engines like
-         *     PyTorch. @see <a href="https://github.com/deepjavalibrary/djl/issues/1774">Issue 1774</a>
+         *             PyTorch. @see <a href="https://github.com/deepjavalibrary/djl/issues/1774">Issue 1774</a>
          * @return Confidence of the model that a damage (class 1) happens. Value between 0 and 1.
          */
         @Override
-        public float[] processOutput(TranslatorContext ctx, NDList list) {
+        public Float processOutput(TranslatorContext ctx, NDList list) {
             NDArray logits = list.singletonOrThrow();
             NDArray probs = logits.softmax(-1);
             float probClass1 = probs.getFloat(1);
-            return new float[] { probClass1 };
+            return  probClass1;
+        }
+
+        private float[] fnnModelPromptToFLoatArray(FNNModelPrompt fnnModelPrompt){
+            float[] arr = new float[3];
+            arr[0] = fnnModelPrompt.temperature_mean();
+            arr[1] = fnnModelPrompt.sun_mean();
+            arr[2] = fnnModelPrompt.rain_sum();
+            return arr;
         }
 
     }
