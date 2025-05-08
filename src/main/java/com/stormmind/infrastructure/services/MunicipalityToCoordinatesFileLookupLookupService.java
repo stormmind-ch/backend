@@ -20,7 +20,7 @@ public class MunicipalityToCoordinatesFileLookupLookupService implements Municip
             Float.parseFloat(parts[2].trim())
     );
 
-    public MunicipalityToCoordinatesFileLookupLookupService(@Value("${municipality.csv.path}") String csvFile) throws IOException {
+    public MunicipalityToCoordinatesFileLookupLookupService(@Value("${municipality.csv.path}") String csvFile){
         lookup = createLookup(csvFile);
     }
 
@@ -29,10 +29,12 @@ public class MunicipalityToCoordinatesFileLookupLookupService implements Municip
         return lookup.get(municipality);
     }
 
-    private Map<String, Coordinates> createLookup(String csvFile) throws IOException{
+    public Map<String, Coordinates> createLookup(String csvFile) {
         CSVToHashMapReader<String, Coordinates> reader =
                 new CSVToHashMapReader<>(keyMapper, valueMapper);
 
-        return reader.read(csvFile, 3);
+        return reader.read(csvFile, 3, 1);
     }
+
+
 }

@@ -34,23 +34,29 @@ public class CSVToHashMapReader<K, V> implements CSVReader<Map<K, V>> {
 
 
     /**
-     * Default implementation and expects the csv file to have two columns. <K,V>
+     * Default implementation and expects the csv file to have two columns <K,V> and skips first line.
      * @param csvFile
      * @return
-     * @throws IOException
      */
     @Override
-    public Map<K, V> read(String csvFile) throws IOException {
-        return read(csvFile, 2, 0);
+    public Map<K, V> read(String csvFile) {
+        return read(csvFile, 2, 1);
+    }
+
+
+    /**
+     * Skips first line
+     * @param csvFile
+     * @param columns
+     * @return
+     */
+    @Override
+    public Map<K, V> read(String csvFile, int columns) {
+        return read(csvFile, columns, 1);
     }
 
     @Override
-    public Map<K, V> read(String csvFile, int columns) throws IOException {
-        return read(csvFile, columns, 0);
-    }
-
-    @Override
-    public Map<K, V> read(String csvFile, int columns, int skipFirstNLines) throws IOException {
+    public Map<K, V> read(String csvFile, int columns, int skipFirstNLines) {
         try (Stream<String> lines = Files.lines(Paths.get(csvFile))) {
             return lines
                     .skip(skipFirstNLines)
@@ -60,6 +66,8 @@ public class CSVToHashMapReader<K, V> implements CSVReader<Map<K, V>> {
                             keyMapper,
                             valueMapper
                     ));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
