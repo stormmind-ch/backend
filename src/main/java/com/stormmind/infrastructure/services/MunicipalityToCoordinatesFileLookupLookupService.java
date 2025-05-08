@@ -6,16 +6,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.function.Function;
 
 @Repository
 public class MunicipalityToCoordinatesFileLookupLookupService implements MunicipalityToCoordinatesLookupService {
 
-    private final HashMap<String, Coordinates> lookup;
+    private final Map<String, Coordinates> lookup;
+
+    Function<String[], String> keyMapper = parts -> parts[0].trim();
+    Function<String[], Coordinates> valueMapper = parts -> new Coordinates(
+            Float.parseFloat(parts[1].trim()),
+            Float.parseFloat(parts[2].trim())
+    );
 
     public MunicipalityToCoordinatesFileLookupLookupService(@Value("${municipality.csv.path}") String csvFile) throws IOException {
         lookup = createLookup(csvFile);
@@ -26,20 +29,10 @@ public class MunicipalityToCoordinatesFileLookupLookupService implements Municip
         return lookup.get(municipality);
     }
 
-    private HashMap<String, Coordinates> createLookup(String csvFile) throws IOException{
-        try (Stream<String> lines = Files.lines(Paths.get(csvFile))) {
-            return (HashMap<String, Coordinates>) lines
-                    .skip(1) // skip header
-                    .map(line -> line.split(","))
-                    .filter(parts -> parts.length == 3)
-                    .collect(Collectors.toMap(
-                            parts -> parts[0].trim(), // municipality
-                            parts -> new Coordinates(
-                                    Float.parseFloat(parts[1].trim()), // latitude
-                                    Float.parseFloat(parts[2].trim())  // longitude
-                            )
-                    ));
-        }
+    private Map<String, Coordinates> createLookup(String csvFile) throws IOException{
+        CSVToHashMapReader<String, Coordinates> reader =
+                new CSVToHashMapReader<>(keyMapper, valueMapper);
+
+        return reader.read(csvFile, 3);
     }
 }
-

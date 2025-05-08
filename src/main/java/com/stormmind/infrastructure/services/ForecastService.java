@@ -11,7 +11,6 @@ import com.stormmind.domain.Municipality;
 import com.stormmind.infrastructure.ai.ModelInferenceService;
 import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
 import org.springframework.stereotype.Service;
-
 import java.io.IOException;
 
 @Service
@@ -25,14 +24,18 @@ public class ForecastService {
         this.municipalityToCoordinatesLookupService = municipalityToCoordinatesLookupService;
     }
 
-    public float getForcast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
+    public float getForecast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
         // TODO Get Cluster Centroid
+
+
+
         String clusterCenteroidMunicipalityName = "Affoltern am Albis";
         //  Get Coordinates for Cluster Centroid
         Coordinates coordinates = municipalityToCoordinatesLookupService.getCoordinatesForMunicipality(clusterCenteroidMunicipalityName);
 
         Municipality clusterCentroidMunicipality = new Municipality(clusterCenteroidMunicipalityName, coordinates);
         // TODO Get Weather for Cluster Centroid
+
         // Inference Model
         AIPrompt fnnModelPrompt = new FNNModelPrompt(0.0f,100000f, 0.7f);
         ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(model);

@@ -23,6 +23,6 @@ public class ForecastController {
 
     @GetMapping("/{model}/{municipality}")
     private float getForecast(@PathVariable String model, @PathVariable String municipality) throws ModelNotFoundException, TranslateException, MalformedModelException, IOException {
-        return forecastService.getForcast(model, municipality);
+        return forecastService.getForecast(model, municipality);
     }
 }
