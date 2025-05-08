@@ -1,0 +1,79 @@
+package com.stormmind.infrastructure.ai;
+
+import ai.djl.MalformedModelException;
+import ai.djl.repository.zoo.ModelNotFoundException;
+import ai.djl.translate.TranslateException;
+import ai.djl.translate.Translator;
+import ai.djl.translate.TranslatorContext;
+import ai.djl.ndarray.NDList;
+import ai.djl.ndarray.NDManager;
+import ai.djl.ndarray.NDArray;
+import ai.djl.inference.Predictor;
+import ai.djl.repository.zoo.Criteria;
+import ai.djl.repository.zoo.ZooModel;
+import ai.djl.repository.zoo.ModelZoo;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.stereotype.Service;
+import java.io.IOException;
+import java.nio.file.Paths;
+
+@Service
+public class FNNModelInferenceService implements ModelInferenceService {
+
+    private ZooModel<float[], float[]> model;
+
+    @PostConstruct
+    public void init() throws ModelNotFoundException, MalformedModelException, IOException {
+        Criteria<float[], float[]> criteria = Criteria.builder()
+                .setTypes(float[].class, float[].class)
+                .optModelPath(Paths.get("src/main/java/com/stormmind/infrastructure/ai/models"))
+                .optModelName("fnn_temp_sun_rain")
+                .optTranslator(new FNNTranslator())
+                .build();
+
+        model = ModelZoo.loadModel(criteria);
+    }
+
+    public float[] predict(float[] input) throws  TranslateException {
+        try (Predictor<float[], float[]> predictor = model.newPredictor()) {
+            return predictor.predict(input);
+        }
+    }
+
+    /**
+     * This method is used that the memory is freed after the application shuts down, as some parts of the DJL modules
+     * are not managed by the Java GC.
+     */
+    @PreDestroy
+    public void cleanup() {
+        if (model != null) {
+            model.close();
+        }
+    }
+    /***
+     * This Translator is needed to convert an input which is a Java float[] to an NDArray, so that the model can
+     * work with it. Additionally, it performs a z-score normalization.
+     */
+    private static class FNNTranslator implements Translator<float[], float[]> {
+
+        private  final float[] MEAN = {8.7132e+00f, 2.8966e+04f, 2.4517e+01f};
+        private  final float[] STD = {7.3103e+00f, 1.0314e+04f, 2.8042e+01f};
+
+        @Override
+        public NDList processInput(TranslatorContext ctx, float[] input) {
+            NDManager manager = ctx.getNDManager();
+            NDArray inputArray = manager.create(input);
+            NDArray meanArray = manager.create(MEAN);
+            NDArray stdArray = manager.create(STD);
+
+            NDArray normalized = inputArray.sub(meanArray).div(stdArray);
+            return new NDList(normalized);
+        }
+
+        @Override
+        public float[] processOutput(TranslatorContext ctx, NDList list) {
+            return list.singletonOrThrow().toFloatArray();
+        }
+    }
+}
