@@ -1,6 +1,7 @@
 package com.stormmind.infrastructure.ai;
 
 import ai.djl.MalformedModelException;
+import ai.djl.ndarray.types.DataType;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.translate.TranslateException;
 import ai.djl.translate.Translator;
@@ -71,9 +72,22 @@ public class FNNModelInferenceService implements ModelInferenceService {
             return new NDList(normalized);
         }
 
+        /**
+         * This method handles the output of the model. It applies the softmax
+         * (<a href="https://en.wikipedia.org/wiki/Softmax_function">Softmax in Wikipedia</a>) activation function of,
+         * the last value int the input List.
+         * @param ctx the toolkit used for post-processing
+         * @param list the output NDList after inference, usually immutable in engines like
+         *     PyTorch. @see <a href="https://github.com/deepjavalibrary/djl/issues/1774">Issue 1774</a>
+         * @return Confidence of the model that a damage (class 1) happens. Value between 0 and 1.
+         */
         @Override
         public float[] processOutput(TranslatorContext ctx, NDList list) {
-            return list.singletonOrThrow().toFloatArray();
+            NDArray logits = list.singletonOrThrow();
+            NDArray probs = logits.softmax(-1);
+            float probClass1 = probs.getFloat(1);
+            return new float[] { probClass1 };
         }
+
     }
 }

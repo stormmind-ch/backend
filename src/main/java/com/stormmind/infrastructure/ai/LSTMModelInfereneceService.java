@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-// TODO
+// TODO, cannot be done until we don't have a working LSTM
 @Service
 public class LSTMModelInfereneceService implements ModelInferenceService {
 
