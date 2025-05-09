@@ -4,5 +4,5 @@ import org.springframework.stereotype.Component;
 
 @Component
 public interface ModelToClustersLookupService extends LookupService{
-    int getClusterFile(String model);
+    String getClusterFile(String model);
 }

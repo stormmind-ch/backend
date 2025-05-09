@@ -6,7 +6,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Map;
 import java.util.function.Function;
 
-@Repository
+/**
+ * This class is instantiated through its factory: MunicipalityToCentroidLookupServiceFactory
+ */
 public class MunicipalityToCentroidFileLookupService implements MunicipalityToCentroidLookupService {
 
     private final Map<String, String> lookup;

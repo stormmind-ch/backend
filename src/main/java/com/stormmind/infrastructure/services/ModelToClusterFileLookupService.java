@@ -22,11 +22,11 @@ public class ModelToClusterFileLookupService implements ModelToClustersLookupSer
     }
 
     @Override
-    public int getClusterFile(String model) {
+    public String getClusterFile(String model) {
         return lookup.get(model);
     }
 
-    public Map<String, Integer> createLookup(String csvFile) throws IOException {
+    public Map<String, String> createLookup(String csvFile) {
         CSVToHashMapReader<String, String> reader =
                 new CSVToHashMapReader<>(keyMapper, valueMapper);
 

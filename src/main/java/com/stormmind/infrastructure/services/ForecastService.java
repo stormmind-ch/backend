@@ -21,31 +21,28 @@ public class ForecastService {
     private final ModelInferenceServiceFactory modelInferenceServiceFactory;
     private final MunicipalityToCoordinatesLookupService municipalityToCoordinatesLookupService;
     private final ModelToClustersLookupService modelToClustersLookupService;
-    private final MunicipalityToCentroidLookupService municipalityToCentroidLookupService;
+    private MunicipalityToCentroidLookupServiceFactory municipalityToCentroidLookupServiceFactory;
 
     public ForecastService(ModelInferenceServiceFactory modelInferenceServiceFactory,
                            MunicipalityToCoordinatesLookupService municipalityToCoordinatesLookupService,
-                           ModelToClustersLookupService modelToClustersLookupService, MunicipalityToCentroidLookupService municipalityToCentroidLookupService) {
+                           ModelToClustersLookupService modelToClustersLookupService, MunicipalityToCentroidLookupServiceFactory municipalityToCentroidLookupServiceFactory) {
         this.modelInferenceServiceFactory = modelInferenceServiceFactory;
         this.municipalityToCoordinatesLookupService = municipalityToCoordinatesLookupService;
         this.modelToClustersLookupService = modelToClustersLookupService;
-        this.municipalityToCentroidLookupService = municipalityToCentroidLookupService;
+        this.municipalityToCentroidLookupServiceFactory = municipalityToCentroidLookupServiceFactory;
     }
 
     public float getForecast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
         // Get Nr of clusters for Model
-        int nr_of_clusters = modelToClustersLookupService.getClusterFile(model);
+        String file = modelToClustersLookupService.getClusterFile(model);
 
-        // TODO Get Cluster Centroid
-
-
-
-
-        String clusterCenteroidMunicipalityName = "Affoltern am Albis";
-        //  Get Coordinates for Cluster Centroid
+        MunicipalityToCentroidLookupService municipalityToCentroidLookupService = municipalityToCentroidLookupServiceFactory.fromFile(file);
+        String clusterCenteroidMunicipalityName = municipalityToCentroidLookupService.getCentroidMunicipality(queriedMunicipality);
         Coordinates coordinates = municipalityToCoordinatesLookupService.getCoordinatesForMunicipality(clusterCenteroidMunicipalityName);
 
         Municipality clusterCentroidMunicipality = new Municipality(clusterCenteroidMunicipalityName, coordinates);
+
+
         // TODO Get Weather for Cluster Centroid
 
         // Inference Model
