@@ -2,15 +2,15 @@ package com.stormmind.infrastructure.weather_api;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-class SydneySweeneyFetcherTest {
+class AbstractOpenMeteoFetcherTest {
 
-    private SydneySweeneyFetcher sydney;
+    private AbstractOpenMeteoFetcher fetcher;
 
     @BeforeEach
     void setUp() {
-        sydney = new SydneySweeneyFetcher();
+        // fetcher ist abstrakt – kann nicht direkt instanziert werden
+        // ggf. anlegen als anonyme Klasse oder über konkreten Subtyp testen
     }
 
     @Test

@@ -6,7 +6,6 @@ import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.List;
 
 /**
  * returns the following weeks.
@@ -15,17 +14,17 @@ import java.util.List;
  * -56, -55, -54, -53, -52
  */
 @Component
-public class AnaDeArmasFetcher extends AbstractOpenMeteoFetcher {
+public class PreviousYearWeatherFetcher extends AbstractOpenMeteoFetcher {
 
-    private SydneySweeneyFetcher sydney;
+    private PreviousMonthWeatherFetcher previousYearWeatherFetcher;
 
-    public AnaDeArmasFetcher(SydneySweeneyFetcher sydneySweeneyFetcher) {
-        this.sydney = sydneySweeneyFetcher;
+    public PreviousYearWeatherFetcher(PreviousMonthWeatherFetcher previousMonthWeatherFetcher) {
+        this.previousYearWeatherFetcher = previousMonthWeatherFetcher;
     }
 
-    public WeatherDataDTO anaDeArmasFetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
+    public WeatherDataDTO fetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
 
-        WeatherDataDTO weatherDataDTO = sydney.sydneySweeneyFetch(targetMunicipal, centroidMunicipal);
+        WeatherDataDTO weatherDataDTO = previousYearWeatherFetcher.fetch(targetMunicipal, centroidMunicipal);
 
         /**
          * weatherData for the -5x weeks.

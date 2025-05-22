@@ -6,21 +6,20 @@ import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
-import java.util.List;
 
 /**
  * returns the previous 4 and coming week.
  */
 @Component
-public class SydneySweeneyFetcher extends AbstractOpenMeteoFetcher {
+public class PreviousMonthWeatherFetcher extends AbstractOpenMeteoFetcher {
 
     private FNNFetcher fnnFetcher;
 
-    public SydneySweeneyFetcher(FNNFetcher fnnFetcher) {
+    public PreviousMonthWeatherFetcher(FNNFetcher fnnFetcher) {
         this.fnnFetcher = fnnFetcher;
     }
 
-    public WeatherDataDTO sydneySweeneyFetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
+    public WeatherDataDTO fetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
 
         WeatherDataDTO weatherDataDTO = fnnFetcher.vanillaFetch(targetMunicipal, centroidMunicipal);
 

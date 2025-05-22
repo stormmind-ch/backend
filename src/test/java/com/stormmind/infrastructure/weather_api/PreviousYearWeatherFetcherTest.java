@@ -2,15 +2,14 @@ package com.stormmind.infrastructure.weather_api;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
 
-class AnaDeArmasFetcherTest {
+class PreviousYearWeatherFetcherTest {
 
-    private AnaDeArmasFetcher ana;
+    private PreviousYearWeatherFetcher previousYearWeatherFetcher;
 
     @BeforeEach
     void setUp() {
-        ana = new AnaDeArmasFetcher();
+        previousYearWeatherFetcher = new PreviousYearWeatherFetcher(new PreviousMonthWeatherFetcher(new FNNFetcher()));
     }
 
     @Test

@@ -29,7 +29,7 @@ public class FNNModelInferenceService implements ModelInferenceService {
     public void init() throws ModelNotFoundException, MalformedModelException, IOException {
         Criteria<FNNModelPrompt, Float> criteria = Criteria.builder()
                 .setTypes(FNNModelPrompt.class, Float.class)
-                .optModelPath(Paths.get("src/main/java/com/stormmind/infrastructure/ai/models"))
+                .optModelPath(Paths.get("models"))
                 .optModelName("fnn_temp_sun_rain")
                 .optTranslator(new FNNTranslator())
                 .build();
