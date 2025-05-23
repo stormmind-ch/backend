@@ -25,10 +25,6 @@ WORKDIR /app
 # Copy the built JAR file from the builder stage
 COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
 
-# Copying the .csv files
-COPY --from=builder /home/gradle/project/src/main/resources/municipalities_coordinates_newest.csv ./municipalities_coordinates_newest.csv
-COPY --from=builder /home/gradle/project/src/main/resources/municiaplities_to_cluster_centroid_6.csv ./municiaplities_to_cluster_centroid_6.csv
-COPY --from=builder /home/gradle/project/src/main/resources/model_to_cluster_file.csv ./model_to_cluster_file.csv
 # Copy the models directory from the builder stage
 COPY --from=builder /home/gradle/project/models/ models/
 

@@ -1,7 +1,6 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.persistence.MunicipalityToClusterRepository;
-import com.stormmind.domain.Municipality;
+import com.stormmind.application.repositories.MunicipalityToClusterRepository;
 import com.stormmind.domain.MunicipalityToCluster6;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

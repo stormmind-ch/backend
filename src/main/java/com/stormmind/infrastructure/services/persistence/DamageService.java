@@ -1,6 +1,6 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.persistence.DamageRepository;
+import com.stormmind.application.repositories.DamageRepository;
 import com.stormmind.domain.Damage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

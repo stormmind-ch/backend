@@ -1,4 +1,4 @@
-package com.stormmind.application.persistence;
+package com.stormmind.application.repositories;
 
 import com.stormmind.domain.Municipality;
 import org.springframework.data.jpa.repository.JpaRepository;

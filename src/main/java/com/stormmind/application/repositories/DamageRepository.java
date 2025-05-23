@@ -1,4 +1,4 @@
-package com.stormmind.application.persistence;
+package com.stormmind.application.repositories;
 
 import com.stormmind.domain.Damage;
 import org.springframework.data.jpa.repository.JpaRepository;

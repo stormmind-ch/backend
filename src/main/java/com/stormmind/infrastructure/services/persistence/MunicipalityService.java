@@ -1,7 +1,6 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.persistence.MunicipalityRepository;
-import com.stormmind.domain.Damage;
+import com.stormmind.application.repositories.MunicipalityRepository;
 import com.stormmind.domain.Municipality;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
