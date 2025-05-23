@@ -3,15 +3,12 @@ package com.stormmind.infrastructure.services;
 import ai.djl.MalformedModelException;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.translate.TranslateException;
-import com.stormmind.application.ModelToClustersLookupService;
-import com.stormmind.application.MunicipalityToCentroidLookupService;
-import com.stormmind.application.MunicipalityToCoordinatesLookupService;
-import com.stormmind.domain.AIPrompt;
-import com.stormmind.domain.Coordinates;
-import com.stormmind.domain.FNNModelPrompt;
-import com.stormmind.domain.Municipality;
+import com.stormmind.domain.*;
 import com.stormmind.infrastructure.ai.ModelInferenceService;
 import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
+import com.stormmind.infrastructure.services.persistence.MunicipalityService;
+import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 
@@ -19,28 +16,26 @@ import java.io.IOException;
 public class ForecastService {
 
     private final ModelInferenceServiceFactory modelInferenceServiceFactory;
-    private final MunicipalityToCoordinatesLookupService municipalityToCoordinatesLookupService;
-    private final ModelToClustersLookupService modelToClustersLookupService;
-    private MunicipalityToCentroidLookupServiceFactory municipalityToCentroidLookupServiceFactory;
+    private final MunicipalityToClusterService municipalityToClusterService;
+    private final MunicipalityService municipalityService;
+
 
     public ForecastService(ModelInferenceServiceFactory modelInferenceServiceFactory,
-                           MunicipalityToCoordinatesLookupService municipalityToCoordinatesLookupService,
-                           ModelToClustersLookupService modelToClustersLookupService, MunicipalityToCentroidLookupServiceFactory municipalityToCentroidLookupServiceFactory) {
+                           MunicipalityToClusterService municipalityToClusterService,
+                           MunicipalityService municipalityService) {
         this.modelInferenceServiceFactory = modelInferenceServiceFactory;
-        this.municipalityToCoordinatesLookupService = municipalityToCoordinatesLookupService;
-        this.modelToClustersLookupService = modelToClustersLookupService;
-        this.municipalityToCentroidLookupServiceFactory = municipalityToCentroidLookupServiceFactory;
+        this.municipalityToClusterService = municipalityToClusterService;
+        this.municipalityService = municipalityService;
     }
 
     public float getForecast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
         // Get Nr of clusters for Model
-        String file = modelToClustersLookupService.getClusterFile(model);
-
-        MunicipalityToCentroidLookupService municipalityToCentroidLookupService = municipalityToCentroidLookupServiceFactory.fromFile(file);
-        String clusterCenteroidMunicipalityName = municipalityToCentroidLookupService.getCentroidMunicipality(queriedMunicipality);
-        Coordinates coordinates = municipalityToCoordinatesLookupService.getCoordinatesForMunicipality(clusterCenteroidMunicipalityName);
-
-        Municipality clusterCentroidMunicipality = new Municipality(clusterCenteroidMunicipalityName, coordinates);
+        //String file = modelToClustersLookupService.getClusterFile(model);
+        MunicipalityToCluster6 municipalityToCluster6 = municipalityToClusterService.getMunicipalityToClusterByMunicipality(queriedMunicipality);
+        if (municipalityToCluster6 == null){
+            System.out.println("No mapping found for " + queriedMunicipality);
+        }
+        Municipality municipality = municipalityService.getMunicipalityById(municipalityToCluster6.getCenter());
 
 
         // TODO Get Weather for Cluster Centroid

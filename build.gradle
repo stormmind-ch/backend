@@ -18,9 +18,21 @@ repositories {
 }
 
 dependencies {
+	//spring
+	implementation 'org.springframework.boot:spring-boot-starter'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	//persistence
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	runtimeOnly 'org.postgresql:postgresql'
+
+	//test
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//djl
 	implementation 'ai.djl:api:0.31.1'
 	implementation 'ai.djl.pytorch:pytorch-engine:0.31.1'
 	implementation 'ai.djl.pytorch:pytorch-model-zoo:0.31.1'
@@ -28,6 +40,10 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpclient:4.5.14'
 	implementation 'org.apache.httpcomponents:httpcore:4.4.16'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+
+	//other
+	implementation 'com.google.code.gson:gson:2.13.1'
+	implementation 'org.apache.httpcomponents:httpclient:4.5.13'
 }
 
 tasks.named('test') {

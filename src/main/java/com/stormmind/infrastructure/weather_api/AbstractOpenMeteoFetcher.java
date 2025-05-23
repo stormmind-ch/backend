@@ -119,8 +119,8 @@ public class AbstractOpenMeteoFetcher{
         uriBuilder.setScheme(scheme);
         uriBuilder.setHost(offsetInWeeks > 2 ? archivHost : forecastHost);
         uriBuilder.setPath(offsetInWeeks > 2 ? archivPath : forecastPath);
-        uriBuilder.setParameter("latitude", String.valueOf(centroidMunicipal.coordinates().latitude()));
-        uriBuilder.setParameter("longitude", String.valueOf(centroidMunicipal.coordinates().longitude()));
+        uriBuilder.setParameter("latitude", String.valueOf(centroidMunicipal.getCoordinates().getLatitude()));
+        uriBuilder.setParameter("longitude", String.valueOf(centroidMunicipal.getCoordinates().getLongitude()));
         if(offsetInWeeks > 2){
             uriBuilder.setParameter("start_date", week.start());
             uriBuilder.setParameter("end_date", week.end());

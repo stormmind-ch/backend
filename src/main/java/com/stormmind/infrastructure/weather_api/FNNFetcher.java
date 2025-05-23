@@ -15,8 +15,8 @@ public class FNNFetcher extends AbstractOpenMeteoFetcher{
     public WeatherDataDTO vanillaFetch(Municipality targetMunicipal, Municipality centroidMunicipal) {
         URL url = buildUrl(centroidMunicipal, 0);
         return new WeatherDataDTO(
-                targetMunicipal.name(),
-                centroidMunicipal.name(),
+                targetMunicipal.getName(),
+                centroidMunicipal.getName(),
                 new ArrayList<>(List.of(this.fetchData(url))),
                 new ArrayList<>(),
                 new ArrayList<>()
