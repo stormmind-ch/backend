@@ -1,4 +1,4 @@
-package com.stormmind.infrastructure.services;
+package com.stormmind.application;
 
 import ai.djl.MalformedModelException;
 import ai.djl.repository.zoo.ModelNotFoundException;
@@ -10,10 +10,8 @@ import com.stormmind.infrastructure.services.persistence.MunicipalityService;
 import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
 import com.stormmind.infrastructure.weather_api.OpenMeteoWeatherFetcherFactory;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
-import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
-import java.util.ArrayList;
 
 @Service
 public class ForecastService {
@@ -35,17 +33,14 @@ public class ForecastService {
     }
 
     public float getForecast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
-        MunicipalityToCluster6 municipalityToCluster6 = municipalityToClusterService.getMunicipalityToClusterByMunicipality(queriedMunicipality);
-        if (municipalityToCluster6 == null){
+        MunicipalityToCluster municipalityToCluster = municipalityToClusterService.getMunicipalityToClusterByMunicipality(queriedMunicipality);
+        if (municipalityToCluster == null){
             throw new IOException("Mapping for municipality " + queriedMunicipality + " not found");
         }
         Municipality targetMunicipality = municipalityService.getMunicipalityById(queriedMunicipality);
-        Municipality centroidMunicipality = municipalityService.getMunicipalityById(municipalityToCluster6.getCenter());
+        Municipality centroidMunicipality = municipalityService.getMunicipalityById(municipalityToCluster.getCenter());
         WeatherDataDTO weatherDataDTO = openMeteoWeatherFetcherFactory.getWeatherFetcher(model).fetch(targetMunicipality, centroidMunicipality);
-        ArrayList<WeatherValueDTO> temp = weatherDataDTO.forecast();
-
-        // Inference Model
-        Inference fnnModelPrompt = new FNNModelInference(0.0f,100000f, 0.7f);
+        Inference fnnModelPrompt = WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherDataDTO);
         ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(model);
         return modelInferenceService.predict(fnnModelPrompt);
     }
