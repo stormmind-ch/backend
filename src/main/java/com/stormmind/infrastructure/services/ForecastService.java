@@ -8,9 +8,12 @@ import com.stormmind.infrastructure.ai.ModelInferenceService;
 import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
 import com.stormmind.infrastructure.services.persistence.MunicipalityService;
 import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
-import org.springframework.data.crossstore.ChangeSetPersister;
+import com.stormmind.infrastructure.weather_api.OpenMeteoWeatherFetcherFactory;
+import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
+import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.util.ArrayList;
 
 @Service
 public class ForecastService {
@@ -18,30 +21,31 @@ public class ForecastService {
     private final ModelInferenceServiceFactory modelInferenceServiceFactory;
     private final MunicipalityToClusterService municipalityToClusterService;
     private final MunicipalityService municipalityService;
+    private final OpenMeteoWeatherFetcherFactory openMeteoWeatherFetcherFactory;
 
 
     public ForecastService(ModelInferenceServiceFactory modelInferenceServiceFactory,
                            MunicipalityToClusterService municipalityToClusterService,
-                           MunicipalityService municipalityService) {
+                           MunicipalityService municipalityService,
+                           OpenMeteoWeatherFetcherFactory openMeteoWeatherFetcherFactory) {
         this.modelInferenceServiceFactory = modelInferenceServiceFactory;
         this.municipalityToClusterService = municipalityToClusterService;
         this.municipalityService = municipalityService;
+        this.openMeteoWeatherFetcherFactory = openMeteoWeatherFetcherFactory;
     }
 
     public float getForecast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
-        // Get Nr of clusters for Model
-        //String file = modelToClustersLookupService.getClusterFile(model);
         MunicipalityToCluster6 municipalityToCluster6 = municipalityToClusterService.getMunicipalityToClusterByMunicipality(queriedMunicipality);
         if (municipalityToCluster6 == null){
-            System.out.println("No mapping found for " + queriedMunicipality);
+            throw new IOException("Mapping for municipality " + queriedMunicipality + " not found");
         }
-        Municipality municipality = municipalityService.getMunicipalityById(municipalityToCluster6.getCenter());
-
-
-        // TODO Get Weather for Cluster Centroid
+        Municipality targetMunicipality = municipalityService.getMunicipalityById(queriedMunicipality);
+        Municipality centroidMunicipality = municipalityService.getMunicipalityById(municipalityToCluster6.getCenter());
+        WeatherDataDTO weatherDataDTO = openMeteoWeatherFetcherFactory.getWeatherFetcher(model).fetch(targetMunicipality, centroidMunicipality);
+        ArrayList<WeatherValueDTO> temp = weatherDataDTO.forecast();
 
         // Inference Model
-        AIPrompt fnnModelPrompt = new FNNModelPrompt(0.0f,100000f, 0.7f);
+        Inference fnnModelPrompt = new FNNModelInference(0.0f,100000f, 0.7f);
         ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(model);
         return modelInferenceService.predict(fnnModelPrompt);
     }

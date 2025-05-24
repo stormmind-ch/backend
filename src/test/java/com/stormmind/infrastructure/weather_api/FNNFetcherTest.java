@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 
 class FNNFetcherTest {
 
-    private FNNFetcher fetcher;
+    private OpenMeteoWeatherWeatherFetcherCurrentWeek fetcher;
 
     @BeforeEach
     void setUp() {
-        fetcher = new FNNFetcher();
+        fetcher = new OpenMeteoWeatherWeatherFetcherCurrentWeek();
     }
 
     @Test
