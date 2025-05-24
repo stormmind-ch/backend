@@ -1,7 +1,7 @@
 package com.stormmind.infrastructure.services.persistence;
 
 import com.stormmind.application.repositories.MunicipalityToClusterRepository;
-import com.stormmind.domain.MunicipalityToCluster6;
+import com.stormmind.domain.MunicipalityToCluster;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +12,10 @@ import java.util.List;
 public class MunicipalityToClusterService {
     private final MunicipalityToClusterRepository municipalityToClusterRepository6;
 
-    public List<MunicipalityToCluster6> getAllMunicipalitiesToCluster6(){
+    public List<MunicipalityToCluster> getAllMunicipalitiesToCluster6(){
         return municipalityToClusterRepository6.findAll();
     }
-    public MunicipalityToCluster6 getMunicipalityToClusterByMunicipality(String municipality){
+    public MunicipalityToCluster getMunicipalityToClusterByMunicipality(String municipality){
         return municipalityToClusterRepository6.getMunicipalityToCluster6ByMunicipality(municipality);
 
     }
