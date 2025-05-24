@@ -75,9 +75,9 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
 
                 return new WeatherValueDTO(
                         temperature_list,//temperature
-                        rain_list,//rain
-                        snow_list,//snow
-                        sunshine_list//sunshine
+                        sunshine_list,//rain
+                        rain_list,//snow
+                        snow_list//sunshine
                         );
             }
         } catch (IOException e) {}
