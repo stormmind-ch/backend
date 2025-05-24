@@ -1,8 +1,8 @@
 package com.stormmind.application.repositories;
 
-import com.stormmind.domain.MunicipalityToCluster6;
+import com.stormmind.domain.MunicipalityToCluster;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MunicipalityToClusterRepository extends JpaRepository<MunicipalityToCluster6, String> {
-    MunicipalityToCluster6 getMunicipalityToCluster6ByMunicipality(String municipality);
+public interface MunicipalityToClusterRepository extends JpaRepository<MunicipalityToCluster, String> {
+    MunicipalityToCluster getMunicipalityToCluster6ByMunicipality(String municipality);
 }
