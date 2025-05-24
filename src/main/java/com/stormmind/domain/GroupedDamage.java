@@ -8,7 +8,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
@@ -17,16 +16,12 @@ import java.time.LocalDate;
 public class GroupedDamage implements Serializable {
 
     @Id
-    @Column(name = "municipality")
     private String municipality;
 
-    @Column(name = "latitude")
     private float latitude;
 
-    @Column(name = "longitude")
     private float longitude;
 
-    @Column(name = "occurrence_count")
     private long occurrenceCount;
 
 }
