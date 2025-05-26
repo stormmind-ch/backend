@@ -8,7 +8,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/damage")
+@CrossOrigin(origins = {
+        "https://stormmind.ch",
+        "https://www.stormmind.ch"
+})
+@RequestMapping("/api/damage")
 public class DamageController {
 
     private final DamageService damageService;
@@ -28,8 +32,8 @@ public class DamageController {
     }
 
 
-    @PostMapping("/")
-    public ResponseEntity<Damage> saveEmployee(@RequestBody Damage damage)
+    @PostMapping("/savedamage")
+    public ResponseEntity<Damage> saveDamage(@RequestBody Damage damage)
     {
         return ResponseEntity.ok().body(damageService.saveDamage(damage));
     }

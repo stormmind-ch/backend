@@ -9,6 +9,7 @@ import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
 import com.stormmind.infrastructure.services.persistence.MunicipalityService;
 import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
 import com.stormmind.infrastructure.weather_api.OpenMeteoWeatherFetcherFactory;
+import com.stormmind.infrastructure.weather_api.WeatherFetcher;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -39,7 +40,11 @@ public class ForecastService {
         }
         Municipality targetMunicipality = municipalityService.getMunicipalityById(queriedMunicipality);
         Municipality centroidMunicipality = municipalityService.getMunicipalityById(municipalityToCluster.getCenter());
-        WeatherDataDTO weatherDataDTO = openMeteoWeatherFetcherFactory.getWeatherFetcher(model).fetch(targetMunicipality, centroidMunicipality);
+        WeatherFetcher weatherFetcher = openMeteoWeatherFetcherFactory.getWeatherFetcher(model);
+        if (weatherFetcher == null){
+            throw new IOException("Model not found with name " + model);
+        }
+        WeatherDataDTO weatherDataDTO = weatherFetcher.fetch(targetMunicipality, centroidMunicipality);
         Inference fnnModelPrompt = WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherDataDTO);
         ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(model);
         return modelInferenceService.predict(fnnModelPrompt);
