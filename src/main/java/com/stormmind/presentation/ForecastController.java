@@ -4,6 +4,7 @@ import ai.djl.MalformedModelException;
 import ai.djl.repository.zoo.ModelNotFoundException;
 import ai.djl.translate.TranslateException;
 import com.stormmind.application.ForecastService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.io.IOException;
         "https://www.stormmind.ch"
 })
 @RequestMapping("/api/forecast")
+@Slf4j
 public class ForecastController {
 
     private final ForecastService forecastService;
@@ -24,6 +26,7 @@ public class ForecastController {
 
     @GetMapping("/{model}/{municipality}")
     private float getForecast(@PathVariable String model, @PathVariable String municipality) throws ModelNotFoundException, TranslateException, MalformedModelException, IOException {
+        log.info("Got request with PathVariables: {} {}", model, municipality);
         return forecastService.getForecast(model, municipality);
     }
 

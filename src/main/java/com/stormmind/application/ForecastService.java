@@ -11,10 +11,12 @@ import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterSe
 import com.stormmind.infrastructure.weather_api.OpenMeteoWeatherFetcherFactory;
 import com.stormmind.infrastructure.weather_api.WeatherFetcher;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 
 @Service
+@Slf4j
 public class ForecastService {
 
     private final ModelInferenceServiceFactory modelInferenceServiceFactory;
@@ -42,6 +44,7 @@ public class ForecastService {
         Municipality centroidMunicipality = municipalityService.getMunicipalityById(municipalityToCluster.getCenter());
         WeatherFetcher weatherFetcher = openMeteoWeatherFetcherFactory.getWeatherFetcher(model);
         if (weatherFetcher == null){
+            log.error("Model was not found with naem: {}", model);
             throw new IOException("Model not found with name " + model);
         }
         WeatherDataDTO weatherDataDTO = weatherFetcher.fetch(targetMunicipality, centroidMunicipality);

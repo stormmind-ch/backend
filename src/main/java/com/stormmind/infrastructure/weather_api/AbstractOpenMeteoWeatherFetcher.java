@@ -9,6 +9,7 @@ import com.stormmind.domain.Duration;
 import com.stormmind.domain.Municipality;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
+@Slf4j
 public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
     @Value("${url.scheme}")
     String scheme;
@@ -44,14 +46,17 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
 
     public WeatherValueDTO fetchData(URL url){
         try {
+            log.info("Open Meteo API request to URL: {}", url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
             int response = conn.getResponseCode();
 
             if (response != 200) {
+                log.error("Error from Open Meteo API: {}", response);
                 throw new RuntimeException("HttpResponseCode: " + response);
             } else {
+                log.info("Ok response from Open Meteo API");
                 InputStreamReader reader = new InputStreamReader(url.openStream());
 
                 JsonElement parsed = JsonParser.parseReader(reader);
@@ -80,7 +85,9 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
                         snow_list//sunshine
                         );
             }
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            log.error("IOException occurred in AbstractOpenMeteoWeatherFetcher.fetchData");
+        }
         return null;
     }
     public abstract WeatherDataDTO fetch(Municipality targetMunicipality, Municipality centroidMunicipality);
