@@ -41,6 +41,10 @@ dependencies {
 	implementation 'org.apache.httpcomponents:httpcore:4.4.16'
 	testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
 
+	// caching
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
+
 	//other
 	implementation 'com.google.code.gson:gson:2.13.1'
 	implementation 'org.apache.httpcomponents:httpclient:4.5.13'

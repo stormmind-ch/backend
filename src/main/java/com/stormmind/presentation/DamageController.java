@@ -2,8 +2,8 @@ package com.stormmind.presentation;
 
 import com.stormmind.domain.Damage;
 import com.stormmind.infrastructure.services.persistence.DamageService;
-import com.stormmind.presentation.dtos.response.AllDamagesDto;
-import com.stormmind.presentation.dtos.response.DamageDto;
+import com.stormmind.presentation.dtos.response.damage.AllDamagesDto;
+import com.stormmind.presentation.dtos.response.damage.DamageDto;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
