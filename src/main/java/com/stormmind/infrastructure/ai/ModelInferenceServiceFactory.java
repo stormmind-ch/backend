@@ -19,8 +19,8 @@ public class ModelInferenceServiceFactory {
 
     public ModelInferenceService getModelInferenceService(String modelName) throws ModelNotFoundException {
         return switch (modelName) {
-            case "FNN" -> fnnModelInferenceService;
-            case "LSTM" -> lstmModelInfereneceService;
+            case "FNN" -> new CachingModelInferenceServiceDecorator(fnnModelInferenceService);
+            case "LSTM" -> new CachingModelInferenceServiceDecorator(lstmModelInfereneceService);
             default -> throw new ModelNotFoundException("No model found with name: " + modelName);
         };
     }

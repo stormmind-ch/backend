@@ -1,65 +1,72 @@
 package com.stormmind.application;
 
-import ai.djl.MalformedModelException;
-import ai.djl.repository.zoo.ModelNotFoundException;
-import ai.djl.translate.TranslateException;
-import com.stormmind.domain.*;
-import com.stormmind.infrastructure.ai.ModelInferenceService;
-import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
-import com.stormmind.infrastructure.services.persistence.MunicipalityService;
+import com.stormmind.application.forecast.request.ForecastRequest;
+import com.stormmind.application.forecast.ForecastRequestHandler;
+import com.stormmind.domain.MunicipalityToCluster;
 import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
-import com.stormmind.infrastructure.weather_api.OpenMeteoWeatherFetcherFactory;
-import com.stormmind.infrastructure.weather_api.WeatherFetcher;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.response.forecast.ForecastDto;
 import com.stormmind.presentation.dtos.response.forecast.ForecastForAllMunicipalitiesDto;
-import org.springframework.cache.annotation.Cacheable;
+import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ForecastService {
 
-    private final ModelInferenceServiceFactory modelInferenceServiceFactory;
+
+
+    private final ForecastRequestHandler head;
+    private final List<ForecastRequestHandler> chain;
     private final MunicipalityToClusterService municipalityToClusterService;
-    private final MunicipalityService municipalityService;
-    private final OpenMeteoWeatherFetcherFactory openMeteoWeatherFetcherFactory;
 
-
-    public ForecastService(ModelInferenceServiceFactory modelInferenceServiceFactory,
-                           MunicipalityToClusterService municipalityToClusterService,
-                           MunicipalityService municipalityService,
-                           OpenMeteoWeatherFetcherFactory openMeteoWeatherFetcherFactory) {
-        this.modelInferenceServiceFactory = modelInferenceServiceFactory;
-        this.municipalityToClusterService = municipalityToClusterService;
-        this.municipalityService = municipalityService;
-        this.openMeteoWeatherFetcherFactory = openMeteoWeatherFetcherFactory;
+    @PostConstruct
+    void wireChain() {
+        for (int i = 0; i < chain.size() - 1; i++) {
+            chain.get(i).setNext(chain.get(i + 1));
+        }
     }
 
-    public ForecastDto getForecast(String model, String  queriedMunicipality) throws TranslateException, ModelNotFoundException, MalformedModelException, IOException {
-        MunicipalityToCluster municipalityToCluster = municipalityToClusterService.getMunicipalityToClusterByMunicipality(queriedMunicipality);
-        if (municipalityToCluster == null){
-            throw new IOException("Mapping for municipality " + queriedMunicipality + " not found");
-        }
-        Municipality targetMunicipality = municipalityService.getMunicipalityById(queriedMunicipality);
-        Municipality centroidMunicipality = municipalityService.getMunicipalityById(municipalityToCluster.getCenter());
-        WeatherFetcher weatherFetcher = openMeteoWeatherFetcherFactory.getWeatherFetcher(model);
-        if (weatherFetcher == null){
-            log.error("Model was not found with name: {}", model);
-            throw new IOException("Model not found with name " + model);
-        }
-        WeatherDataDTO weatherDataDTO = weatherFetcher.fetch(targetMunicipality, centroidMunicipality);
-        Inference fnnModelPrompt = WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherDataDTO);
-        ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(model);
-        return new ForecastDto(targetMunicipality, modelInferenceService.predict(fnnModelPrompt));
+
+    public ForecastDto getForecast(String model, String  queriedMunicipality) throws Exception {
+        ForecastRequest forecastRequest = new ForecastRequest();
+        forecastRequest.setModel(model);
+        forecastRequest.setQueriedMunicipality(queriedMunicipality);
+        head.handle(forecastRequest);
+        return forecastRequest.getResult();
     }
 
+    @Cacheable("forecast")
+    public ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(String model) throws Exception {
+
+        List<MunicipalityToCluster> mappings =
+                municipalityToClusterService.getAllMunicipalitiesToCluster();
+
+        List<ForecastDto> forecasts = mappings.stream()
+                .map(MunicipalityToCluster::getMunicipality)
+                .parallel()
+                .map(municipalityId -> {
+                    try {
+                        return getForecast(model, municipalityId);
+                    } catch (Exception ex) {
+                        log.error("Could not build forecast for {}", municipalityId, ex);
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toList();
+
+        return new ForecastForAllMunicipalitiesDto(forecasts);
+    }
+
+
+    /*
     @Cacheable("forecast")
     public ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(String model) throws IOException, ModelNotFoundException, TranslateException, MalformedModelException {
         // 1. Get all mappings: Municipality -> Cluster
@@ -105,5 +112,8 @@ public class ForecastService {
         }
         return new ForecastForAllMunicipalitiesDto(forecasts);
     }
+     */
+
+
 
 }
