@@ -16,6 +16,7 @@ import com.stormmind.domain.Inference;
 import com.stormmind.domain.FNNModelInference;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -49,6 +50,7 @@ public class FNNModelInferenceService implements ModelInferenceService {
     }
 
     @Override
+    @Cacheable(cacheNames = "inference")
     public float predict(Inference inputData) throws TranslateException {
         try (Predictor<FNNModelInference, Float> predictor = model.newPredictor()) {
             return predictor.predict((FNNModelInference) inputData);

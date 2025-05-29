@@ -42,7 +42,7 @@ public class ForecastService {
         return forecastRequest.getResult();
     }
 
-    @Cacheable("forecast")
+    @Cacheable(cacheNames = "forecast-all-municipalities")
     public ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(String model) throws Exception {
 
         List<MunicipalityToCluster> mappings =
@@ -64,56 +64,4 @@ public class ForecastService {
 
         return new ForecastForAllMunicipalitiesDto(forecasts);
     }
-
-
-    /*
-    @Cacheable("forecast")
-    public ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(String model) throws IOException, ModelNotFoundException, TranslateException, MalformedModelException {
-        // 1. Get all mappings: Municipality -> Cluster
-        List<MunicipalityToCluster> mappings = municipalityToClusterService.getAllMunicipalitiesToCluster();
-
-        // 2. Deduplicate cluster centers
-        Map<String, Municipality> clusterIdToMunicipality = new HashMap<>();
-        for (MunicipalityToCluster mapping : mappings) {
-            String clusterId = mapping.getCenter();
-            clusterIdToMunicipality.computeIfAbsent(clusterId, municipalityService::getMunicipalityById);
-        }
-
-        // 3. Fetch weather for each cluster (clusterId -> WeatherDataDTO)
-        WeatherFetcher weatherFetcher = openMeteoWeatherFetcherFactory.getWeatherFetcher(model);
-        if (weatherFetcher == null) {
-            log.error("Model was not found with name: {}", model);
-            throw new IOException("Model not found with name " + model);
-        }
-
-        Map<String, WeatherDataDTO> clusterWeatherMap = new HashMap<>();
-        for (Map.Entry<String, Municipality> entry : clusterIdToMunicipality.entrySet()) {
-            String clusterId = entry.getKey();
-            Municipality cluster = entry.getValue();
-            clusterWeatherMap.put(clusterId, weatherFetcher.fetch(cluster, cluster));
-        }
-
-        // 4. Run inference for each cluster
-        ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(model);
-        Map<String, Float> clusterForecastMap = new HashMap<>();
-        for (Map.Entry<String, WeatherDataDTO> entry : clusterWeatherMap.entrySet()) {
-            Inference inferenceInput = WeatherDataDtoToInferenceService.weatherDataDTOToInference(entry.getValue());
-            clusterForecastMap.put(entry.getKey(), modelInferenceService.predict(inferenceInput));
-        }
-
-        // 5. Build ForecastDto for every municipality using its cluster’s forecast
-        List<ForecastDto> forecasts = new ArrayList<>();
-        for (MunicipalityToCluster mapping : mappings) {
-            String municipalityId = mapping.getMunicipality();
-            Municipality municipality = municipalityService.getMunicipalityById(municipalityId);
-            String clusterId = mapping.getCenter();
-            float forecastValue = clusterForecastMap.get(clusterId);
-            forecasts.add(new ForecastDto(municipality, forecastValue)); // Assuming ForecastDto has a constructor like that
-        }
-        return new ForecastForAllMunicipalitiesDto(forecasts);
-    }
-     */
-
-
-
 }

@@ -3,7 +3,7 @@ package com.stormmind.infrastructure.weather_api;
 import com.stormmind.domain.Municipality;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
-import org.springframework.stereotype.Component;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.net.URL;
@@ -24,7 +24,7 @@ public class OpenMeteoWeatherWeatherFetcherPreviousYearDecorator extends Abstrac
     public OpenMeteoWeatherWeatherFetcherPreviousYearDecorator(OpenMeteoWeatherWeatherFetcherPreviousMonthDecorator openMeteoWeatherFetcherPreviousMonthDecorator) {
         this.previousYearWeatherFetcher = openMeteoWeatherFetcherPreviousMonthDecorator;
     }
-
+    @Cacheable(cacheNames = "weather-by-cluster", key = "#centroidMunicipality.name")
     public WeatherDataDTO fetch(Municipality targetMunicipality, Municipality centroidMunicipality) {
         WeatherDataDTO weatherDataDTO = previousYearWeatherFetcher.fetch(targetMunicipality, centroidMunicipality);
          //weatherData for the -5x weeks.
