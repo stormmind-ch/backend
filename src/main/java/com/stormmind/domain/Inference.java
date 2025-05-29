@@ -1,4 +1,3 @@
 package com.stormmind.domain;
 
-public interface AIPrompt {
-}
+public interface Inference {}

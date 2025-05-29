@@ -5,11 +5,11 @@ import org.junit.jupiter.api.Test;
 
 class PreviousYearWeatherFetcherTest {
 
-    private PreviousYearWeatherFetcher previousYearWeatherFetcher;
+    private OpenMeteoWeatherWeatherFetcherPreviousYearDecorator openMeteoWeatherFetcherPreviousYearDecorator;
 
     @BeforeEach
     void setUp() {
-        previousYearWeatherFetcher = new PreviousYearWeatherFetcher(new PreviousMonthWeatherFetcher(new FNNFetcher()));
+        openMeteoWeatherFetcherPreviousYearDecorator = new OpenMeteoWeatherWeatherFetcherPreviousYearDecorator(new OpenMeteoWeatherWeatherFetcherPreviousMonthDecorator(new OpenMeteoWeatherWeatherFetcherCurrentWeek()));
     }
 
     @Test

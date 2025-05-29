@@ -12,10 +12,11 @@ import ai.djl.inference.Predictor;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ZooModel;
 import ai.djl.repository.zoo.ModelZoo;
-import com.stormmind.domain.AIPrompt;
-import com.stormmind.domain.FNNModelPrompt;
+import com.stormmind.domain.Inference;
+import com.stormmind.domain.FNNModelInference;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -23,12 +24,12 @@ import java.nio.file.Paths;
 @Service
 public class FNNModelInferenceService implements ModelInferenceService {
 
-    private ZooModel<FNNModelPrompt, Float> model;
+    private ZooModel<FNNModelInference, Float> model;
 
     @PostConstruct
     public void init() throws ModelNotFoundException, MalformedModelException, IOException {
-        Criteria<FNNModelPrompt, Float> criteria = Criteria.builder()
-                .setTypes(FNNModelPrompt.class, Float.class)
+        Criteria<FNNModelInference, Float> criteria = Criteria.builder()
+                .setTypes(FNNModelInference.class, Float.class)
                 .optModelPath(Paths.get("models"))
                 .optModelName("fnn_temp_sun_rain")
                 .optTranslator(new FNNTranslator())
@@ -49,9 +50,10 @@ public class FNNModelInferenceService implements ModelInferenceService {
     }
 
     @Override
-    public float predict(AIPrompt inputData) throws TranslateException {
-        try (Predictor<FNNModelPrompt, Float> predictor = model.newPredictor()) {
-            return predictor.predict((FNNModelPrompt) inputData);
+    @Cacheable(cacheNames = "inference")
+    public float predict(Inference inputData) throws TranslateException {
+        try (Predictor<FNNModelInference, Float> predictor = model.newPredictor()) {
+            return predictor.predict((FNNModelInference) inputData);
         }
     }
 
@@ -59,13 +61,13 @@ public class FNNModelInferenceService implements ModelInferenceService {
      * This Translator is needed to convert an input which is a Java float[] to an NDArray, so that the model can
      * work with it. Additionally, it performs a z-score normalization.
      */
-    private static class FNNTranslator implements Translator<FNNModelPrompt, Float> {
+    private static class FNNTranslator implements Translator<FNNModelInference, Float> {
 
         private  final float[] MEAN = {8.7132e+00f, 2.8966e+04f, 2.4517e+01f};
         private  final float[] STD = {7.3103e+00f, 1.0314e+04f, 2.8042e+01f};
 
         @Override
-        public NDList processInput(TranslatorContext ctx, FNNModelPrompt input) {
+        public NDList processInput(TranslatorContext ctx, FNNModelInference input) {
             NDManager manager = ctx.getNDManager();
             float[] floatsInput = fnnModelPromptToFLoatArray(input);
             NDArray inputArray = manager.create(floatsInput);
@@ -94,11 +96,11 @@ public class FNNModelInferenceService implements ModelInferenceService {
             return  probClass1;
         }
 
-        private float[] fnnModelPromptToFLoatArray(FNNModelPrompt fnnModelPrompt){
+        private float[] fnnModelPromptToFLoatArray(FNNModelInference fnnModelInference){
             float[] arr = new float[3];
-            arr[0] = fnnModelPrompt.temperature_mean();
-            arr[1] = fnnModelPrompt.sun_mean();
-            arr[2] = fnnModelPrompt.rain_sum();
+            arr[0] = fnnModelInference.temperature_mean();
+            arr[1] = fnnModelInference.sun_mean();
+            arr[2] = fnnModelInference.rain_sum();
             return arr;
         }
 

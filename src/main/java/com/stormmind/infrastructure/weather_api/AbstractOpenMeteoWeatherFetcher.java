@@ -7,7 +7,9 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.stormmind.domain.Duration;
 import com.stormmind.domain.Municipality;
+import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,7 +25,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Component
-public class AbstractOpenMeteoFetcher{
+@Slf4j
+public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
     @Value("${url.scheme}")
     String scheme;
     @Value("${url.forecastHost}")
@@ -43,14 +46,17 @@ public class AbstractOpenMeteoFetcher{
 
     public WeatherValueDTO fetchData(URL url){
         try {
+            log.info("Open Meteo API request to URL: {}", url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
             conn.connect();
             int response = conn.getResponseCode();
 
             if (response != 200) {
+                log.error("Error from Open Meteo API: {}", response);
                 throw new RuntimeException("HttpResponseCode: " + response);
             } else {
+                log.info("Ok response from Open Meteo API");
                 InputStreamReader reader = new InputStreamReader(url.openStream());
 
                 JsonElement parsed = JsonParser.parseReader(reader);
@@ -74,21 +80,24 @@ public class AbstractOpenMeteoFetcher{
 
                 return new WeatherValueDTO(
                         temperature_list,//temperature
-                        rain_list,//rain
-                        snow_list,//snow
-                        sunshine_list//sunshine
+                        sunshine_list,//rain
+                        rain_list,//snow
+                        snow_list//sunshine
                         );
             }
-        } catch (IOException e) {}
+        } catch (IOException e) {
+            log.error("IOException occurred in AbstractOpenMeteoWeatherFetcher.fetchData");
+        }
         return null;
     }
+    public abstract WeatherDataDTO fetch(Municipality targetMunicipality, Municipality centroidMunicipality);
 
     /**
      *
      * @param offsetInWeeks - 0 returns today until today + 7 days
      * @return
      */
-    Duration getWeek(Integer offsetInWeeks){
+    private Duration getWeek(Integer offsetInWeeks){
         LocalDate today = LocalDate.now();
         LocalDate start = today.minusDays(offsetInWeeks * 7L);
         LocalDate end = start.plusDays(7L);
@@ -96,14 +105,12 @@ public class AbstractOpenMeteoFetcher{
         String endString = end.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         return new Duration(startString, endString);
     }
-    
 
+    /**
+     * since the historical weather data api has a five-day delay we use weather forecast for previous and next week
+     * and historical weather data otherwise.
+     */
     URL buildUrl(Municipality centroidMunicipal, Integer offsetInWeeks) {
-        /**
-         * since the historical weather data api has a five-day delay we use weather forecast for previous and next week
-         * and historical weather data otherwise.
-         */
-        ;
         Duration week = this.getWeek(offsetInWeeks);
         try {
             URIBuilder uriBuilder = getUriBuilder(centroidMunicipal, offsetInWeeks, week);
