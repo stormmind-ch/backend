@@ -55,7 +55,7 @@ public class ForecastService {
                     try {
                         return getForecast(model, municipalityId);
                     } catch (Exception ex) {
-                        log.error("Could not build forecast for {}", municipalityId, ex);
+                        log.error("Could not build forecast for: {}", municipalityId, ex);
                         return null;
                     }
                 })
