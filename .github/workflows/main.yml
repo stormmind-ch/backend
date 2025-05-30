@@ -1,0 +1,31 @@
+name: Deploy Backend via SSH
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  remote-execution:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run script on remote server
+        run: |
+          ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
+          cd ~/new_backend/backend/;
+          git checkout main;
+          git pull;
+          docker build -t backend-test ~/new_backend/backend/;
+          docker tag backend-test stormmind/backend-test;
+          docker push stormmind/backend-test;
+          kubectl apply -k ~/new_infra/infrastructure/deployment/backend/;"
