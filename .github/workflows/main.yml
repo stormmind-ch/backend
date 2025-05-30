@@ -23,6 +23,7 @@ jobs:
         run: |
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
           cd ~/new_backend/backend/;
+          git stash;
           git checkout main;
           git pull;
           docker build -t backend-test ~/new_backend/backend/;
