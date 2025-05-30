@@ -22,7 +22,7 @@ jobs:
       - name: Run script on remote server
         run: |
           ssh -i ~/.ssh/id_ed25519 ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "
-          cd cd ~/new_backend/backend/;
+          cd ~/new_backend/backend/;
           git checkout main;
           git pull;
           docker build -t backend-test ~/new_backend/backend/;
