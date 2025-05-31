@@ -9,6 +9,7 @@ import com.stormmind.domain.Duration;
 import com.stormmind.domain.Municipality;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -43,6 +44,11 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
     String parameterGround;
     @Value("${url.parameter}")
     String parameter;
+
+    @PostConstruct
+    public void logKey() {
+        System.out.println(">>> API KEY: " + apiKey);
+    }
 
     public WeatherValueDTO fetchData(URL url){
         try {
