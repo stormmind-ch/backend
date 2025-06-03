@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin(origins = {
+@CrossOrigin(origins = {"*",
         "https://stormmind.ch",
         "https://www.stormmind.ch",
         "http://localhost:5173"
