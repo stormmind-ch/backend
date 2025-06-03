@@ -38,21 +38,21 @@ class MunicipalityServiceTest {
     @Test
     void testGetMunicipalityByName_found() {
         Municipality municipality = new Municipality();
-        when(municipalityRepository.getMunicipalityByName("Zürich")).thenReturn(Optional.of(municipality));
+        when(municipalityRepository.findById("Zürich")).thenReturn(Optional.of(municipality));
 
         Municipality result = municipalityPersistenceAdapter.findByName("Zürich");
 
         assertNotNull(result);
-        verify(municipalityRepository).getMunicipalityByName("Zürich");
+        verify(municipalityRepository).findById("Zürich");
     }
 
     @Test
     void testGetMunicipalityByName_notFound() {
-        when(municipalityRepository.getMunicipalityByName("Bern")).thenReturn(Optional.empty());
+        when(municipalityRepository.findById("Bern")).thenReturn(Optional.empty());
 
         Municipality result = municipalityPersistenceAdapter.findByName("Bern");
 
         assertNull(result);
-        verify(municipalityRepository).getMunicipalityByName("Bern");
+        verify(municipalityRepository).findById("Bern");
     }
 }
