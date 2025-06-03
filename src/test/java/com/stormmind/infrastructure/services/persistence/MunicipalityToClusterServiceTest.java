@@ -1,6 +1,7 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.repositories.MunicipalityToClusterRepository;
+import com.stormmind.infrastructure.persistence.MunicipalityToClusterPersistenceAdapter;
+import com.stormmind.infrastructure.repositories.MunicipalityToClusterRepository;
 import com.stormmind.domain.MunicipalityToCluster;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,12 +15,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class MunicipalityToClusterServiceTest {
 
     private MunicipalityToClusterRepository municipalityToClusterRepository;
-    private MunicipalityToClusterService municipalityToClusterService;
+    private MunicipalityToClusterPersistenceAdapter municipalityToClusterPersistenceAdapter;
 
     @BeforeEach
     void setUp() {
         municipalityToClusterRepository = mock(MunicipalityToClusterRepository.class);
-        municipalityToClusterService = new MunicipalityToClusterService(municipalityToClusterRepository);
+        municipalityToClusterPersistenceAdapter = new MunicipalityToClusterPersistenceAdapter(municipalityToClusterRepository);
     }
 
     @Test
@@ -27,7 +28,7 @@ class MunicipalityToClusterServiceTest {
         List<MunicipalityToCluster> mockList = Arrays.asList(new MunicipalityToCluster(), new MunicipalityToCluster());
         when(municipalityToClusterRepository.findAll()).thenReturn(mockList);
 
-        List<MunicipalityToCluster> result = municipalityToClusterService.getAllMunicipalitiesToCluster();
+        List<MunicipalityToCluster> result = municipalityToClusterPersistenceAdapter.getAllMunicipalityToCluster();
 
         assertEquals(2, result.size());
         verify(municipalityToClusterRepository).findAll();
@@ -41,7 +42,7 @@ class MunicipalityToClusterServiceTest {
         when(municipalityToClusterRepository.getMunicipalityToCluster6ByMunicipality(municipalityName))
                 .thenReturn(mockEntity);
 
-        MunicipalityToCluster result = municipalityToClusterService.getMunicipalityToClusterByMunicipality(municipalityName);
+        MunicipalityToCluster result = municipalityToClusterPersistenceAdapter.findByMunicipality(municipalityName);
 
         assertNotNull(result);
         verify(municipalityToClusterRepository).getMunicipalityToCluster6ByMunicipality(municipalityName);

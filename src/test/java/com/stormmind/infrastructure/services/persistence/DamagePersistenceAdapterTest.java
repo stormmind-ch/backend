@@ -1,6 +1,7 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.repositories.DamageRepository;
+import com.stormmind.infrastructure.persistence.DamagePersistenceAdapter;
+import com.stormmind.infrastructure.repositories.DamageRepository;
 import com.stormmind.domain.Damage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,15 +14,15 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class DamageServiceTest {
+class DamagePersistenceAdapterTest {
 
     private DamageRepository damageRepository;
-    private DamageService damageService;
+    private DamagePersistenceAdapter damagePersistenceAdapter;
 
     @BeforeEach
     void setup() {
         damageRepository = mock(DamageRepository.class);
-        damageService = new DamageService(damageRepository);
+        damagePersistenceAdapter = new DamagePersistenceAdapter(damageRepository);
     }
 
     @Test
@@ -29,7 +30,7 @@ class DamageServiceTest {
         List<Damage> mockList = Arrays.asList(new Damage(), new Damage());
         when(damageRepository.findAll()).thenReturn(mockList);
 
-        List<Damage> result = damageService.getAllDamages();
+        List<Damage> result = damagePersistenceAdapter.getAllDamages();
 
         assertEquals(2, result.size());
         verify(damageRepository).findAll();
@@ -42,7 +43,7 @@ class DamageServiceTest {
 
         when(damageRepository.getDamageById(1L)).thenReturn(Optional.of(damage));
 
-        Damage result = damageService.getDamageById(1L);
+        Damage result = damagePersistenceAdapter.getDamageById(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getId());
@@ -53,7 +54,7 @@ class DamageServiceTest {
     void testGetDamageById_notFound() {
         when(damageRepository.getDamageById(99L)).thenReturn(Optional.empty());
 
-        Damage result = damageService.getDamageById(99L);
+        Damage result = damagePersistenceAdapter.getDamageById(99L);
 
         assertNull(result);
         verify(damageRepository).getDamageById(99L);
@@ -64,7 +65,7 @@ class DamageServiceTest {
         Damage damage = new Damage();
         when(damageRepository.save(any(Damage.class))).thenReturn(damage);
 
-        Damage result = damageService.saveDamage(damage);
+        Damage result = damagePersistenceAdapter.saveDamage(damage);
 
         assertNotNull(result);
         assertNotNull(damage.getCreatedAt());
@@ -82,7 +83,7 @@ class DamageServiceTest {
         when(damageRepository.getDamageById(1L)).thenReturn(Optional.of(existing));
         when(damageRepository.save(damage)).thenReturn(damage);
 
-        Damage result = damageService.updateDamage(damage);
+        Damage result = damagePersistenceAdapter.updateDamage(damage);
 
         assertNotNull(result);
         assertEquals(existing.getCreatedAt(), damage.getCreatedAt());
@@ -95,7 +96,7 @@ class DamageServiceTest {
     void testDeleteDamageById() {
         Long id = 1L;
 
-        damageService.deleteDamageById(id);
+        damagePersistenceAdapter.deleteDamageById(id);
 
         verify(damageRepository).deleteById(id);
     }

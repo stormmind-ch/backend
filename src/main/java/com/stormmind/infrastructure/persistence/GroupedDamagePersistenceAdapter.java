@@ -1,6 +1,6 @@
-package com.stormmind.infrastructure.services.persistence;
+package com.stormmind.infrastructure.persistence;
 
-import com.stormmind.application.repositories.GroupedDamageRepository;
+import com.stormmind.infrastructure.repositories.GroupedDamageRepository;
 import com.stormmind.domain.GroupedDamage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,7 +9,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class GroupedDamageService {
+public class GroupedDamagePersistenceAdapter {
 
     private final GroupedDamageRepository groupedDamageRepository;
 

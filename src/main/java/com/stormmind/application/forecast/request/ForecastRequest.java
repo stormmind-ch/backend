@@ -4,9 +4,7 @@ import com.stormmind.domain.Forecast;
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.MunicipalityToCluster;
 import com.stormmind.domain.WeatherData;
-import com.stormmind.infrastructure.weather_api.WeatherFetcher;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
-import com.stormmind.presentation.dtos.response.forecast.ForecastDto;
+import com.stormmind.application.weather.WeatherFetcher;
 import lombok.*;
 
 @Data

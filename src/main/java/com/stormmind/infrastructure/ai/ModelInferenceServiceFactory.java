@@ -1,10 +1,12 @@
 package com.stormmind.infrastructure.ai;
 
 import ai.djl.repository.zoo.ModelNotFoundException;
+import com.stormmind.application.ai.ModelInferenceService;
+import com.stormmind.application.ai.ModelInferenceServiceProvider;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ModelInferenceServiceFactory {
+public class ModelInferenceServiceFactory implements ModelInferenceServiceProvider {
 
     private final FNNModelInferenceService fnnModelInferenceService;
     private final LSTMModelInfereneceService lstmModelInfereneceService;

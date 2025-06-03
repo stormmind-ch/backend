@@ -1,4 +1,4 @@
-package com.stormmind.infrastructure.ai;
+package com.stormmind.application.ai;
 
 import ai.djl.MalformedModelException;
 import ai.djl.repository.zoo.ModelNotFoundException;

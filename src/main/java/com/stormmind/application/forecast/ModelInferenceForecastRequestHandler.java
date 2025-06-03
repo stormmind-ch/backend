@@ -4,7 +4,7 @@ import com.stormmind.application.WeatherDataDtoToInferenceService;
 import com.stormmind.application.forecast.request.ForecastRequest;
 import com.stormmind.domain.Forecast;
 import com.stormmind.domain.Inference;
-import com.stormmind.infrastructure.ai.ModelInferenceService;
+import com.stormmind.application.ai.ModelInferenceService;
 import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;

@@ -1,7 +1,8 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.repositories.MunicipalityRepository;
 import com.stormmind.domain.Municipality;
+import com.stormmind.infrastructure.persistence.MunicipalityPersistenceAdapter;
+import com.stormmind.infrastructure.repositories.MunicipalityRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -9,18 +10,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class MunicipalityServiceTest {
 
     private MunicipalityRepository municipalityRepository;
-    private MunicipalityService municipalityService;
+    private MunicipalityPersistenceAdapter municipalityPersistenceAdapter;
 
     @BeforeEach
     void setUp() {
         municipalityRepository = mock(MunicipalityRepository.class);
-        municipalityService = new MunicipalityService(municipalityRepository);
+        municipalityPersistenceAdapter = new MunicipalityPersistenceAdapter(municipalityRepository);
     }
 
     @Test
@@ -28,30 +29,30 @@ class MunicipalityServiceTest {
         List<Municipality> mockList = Arrays.asList(new Municipality(), new Municipality());
         when(municipalityRepository.findAll()).thenReturn(mockList);
 
-        List<Municipality> result = municipalityService.getAllMunicipalities();
+        List<Municipality> result = municipalityPersistenceAdapter.findAll();
 
         assertEquals(2, result.size());
         verify(municipalityRepository).findAll();
     }
 
     @Test
-    void testGetMunicipalityById_found() {
+    void testGetMunicipalityByName_found() {
         Municipality municipality = new Municipality();
-        when(municipalityRepository.getMunicipalitiesByName("Zürich")).thenReturn(Optional.of(municipality));
+        when(municipalityRepository.getMunicipalityByName("Zürich")).thenReturn(Optional.of(municipality));
 
-        Municipality result = municipalityService.getMunicipalityById("Zürich");
+        Municipality result = municipalityPersistenceAdapter.findByName("Zürich");
 
         assertNotNull(result);
-        verify(municipalityRepository).getMunicipalitiesByName("Zürich");
+        verify(municipalityRepository).getMunicipalityByName("Zürich");
     }
 
     @Test
-    void testGetMunicipalityById_notFound() {
-        when(municipalityRepository.getMunicipalitiesByName("Bern")).thenReturn(Optional.empty());
+    void testGetMunicipalityByName_notFound() {
+        when(municipalityRepository.getMunicipalityByName("Bern")).thenReturn(Optional.empty());
 
-        Municipality result = municipalityService.getMunicipalityById("Bern");
+        Municipality result = municipalityPersistenceAdapter.findByName("Bern");
 
         assertNull(result);
-        verify(municipalityRepository).getMunicipalitiesByName("Bern");
+        verify(municipalityRepository).getMunicipalityByName("Bern");
     }
 }

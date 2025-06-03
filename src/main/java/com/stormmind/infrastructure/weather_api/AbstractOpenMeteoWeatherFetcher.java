@@ -5,12 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.stormmind.application.weather.WeatherFetcher;
 import com.stormmind.domain.Duration;
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.WeatherData;
 import com.stormmind.domain.WeatherValue;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
-import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.utils.URIBuilder;
@@ -29,7 +28,7 @@ import java.util.List;
 
 @Component
 @Slf4j
-public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
+public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher {
     @Value("${url.scheme}")
     String scheme;
     @Value("${url.forecastHost}")

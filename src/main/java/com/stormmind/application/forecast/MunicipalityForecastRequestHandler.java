@@ -1,10 +1,10 @@
 package com.stormmind.application.forecast;
 
 import com.stormmind.application.forecast.request.ForecastRequest;
+import com.stormmind.application.municipality.MunicipalityPort;
+import com.stormmind.application.municipality.MunicipalityToClusterPort;
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.MunicipalityToCluster;
-import com.stormmind.infrastructure.services.persistence.MunicipalityService;
-import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -20,18 +20,18 @@ import java.io.IOException;
 @Primary
 public class MunicipalityForecastRequestHandler extends AbstractForecastHandler{
 
-    private final MunicipalityToClusterService municipalityToClusterService;
-    private final MunicipalityService municipalityService;
+    private final MunicipalityToClusterPort municipalityToClusterPort;
+    private final MunicipalityPort municipalityPort;
 
 
     @Override
     protected void doHandle(ForecastRequest forecastRequest) throws IOException {
-        MunicipalityToCluster municipalityToCluster = municipalityToClusterService.getMunicipalityToClusterByMunicipality(forecastRequest.getQueriedMunicipality());
+        MunicipalityToCluster municipalityToCluster = municipalityToClusterPort.findByMunicipality(forecastRequest.getQueriedMunicipality());
         if (municipalityToCluster == null){
             throw new IOException("Mapping for municipality " + forecastRequest.getQueriedMunicipality() + " not found");
         }
-        Municipality targetMunicipality = municipalityService.getMunicipalityById(municipalityToCluster.getMunicipality());
-        Municipality centerMunicipality = municipalityService.getMunicipalityById(municipalityToCluster.getCenter());
+        Municipality targetMunicipality = municipalityPort.findByName(municipalityToCluster.getMunicipality());
+        Municipality centerMunicipality = municipalityPort.findByName(municipalityToCluster.getCenter());
         forecastRequest.setTargetMunicipality(targetMunicipality);
         forecastRequest.setCentroidMunicipality(centerMunicipality);
 

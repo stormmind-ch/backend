@@ -1,6 +1,6 @@
-package com.stormmind.infrastructure.services.persistence;
+package com.stormmind.infrastructure.persistence;
 
-import com.stormmind.application.repositories.DamageRepository;
+import com.stormmind.infrastructure.repositories.DamageRepository;
 import com.stormmind.domain.Damage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class DamageService {
+public class DamagePersistenceAdapter {
 
     private final DamageRepository damageRepository;
 

@@ -4,8 +4,6 @@ import com.stormmind.domain.FNNModelInference;
 import com.stormmind.domain.Inference;
 import com.stormmind.domain.WeatherData;
 import com.stormmind.domain.WeatherValue;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
-import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 
 import java.util.List;
 import java.util.stream.DoubleStream;

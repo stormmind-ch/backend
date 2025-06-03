@@ -1,6 +1,7 @@
 package com.stormmind.infrastructure.services.persistence;
 
-import com.stormmind.application.repositories.GroupedDamageRepository;
+import com.stormmind.infrastructure.persistence.GroupedDamagePersistenceAdapter;
+import com.stormmind.infrastructure.repositories.GroupedDamageRepository;
 import com.stormmind.domain.GroupedDamage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,15 +12,15 @@ import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class GroupedDamageServiceTest {
+class GroupedDamagePersistenceAdapterTest {
 
     private GroupedDamageRepository groupedDamageRepository;
-    private GroupedDamageService groupedDamageService;
+    private GroupedDamagePersistenceAdapter groupedDamagePersistenceAdapter;
 
     @BeforeEach
     void setUp() {
         groupedDamageRepository = mock(GroupedDamageRepository.class);
-        groupedDamageService = new GroupedDamageService(groupedDamageRepository);
+        groupedDamagePersistenceAdapter = new GroupedDamagePersistenceAdapter(groupedDamageRepository);
     }
 
     @Test
@@ -27,7 +28,7 @@ class GroupedDamageServiceTest {
         List<GroupedDamage> mockList = Arrays.asList(new GroupedDamage(), new GroupedDamage());
         when(groupedDamageRepository.findAll()).thenReturn(mockList);
 
-        List<GroupedDamage> result = groupedDamageService.getAll();
+        List<GroupedDamage> result = groupedDamagePersistenceAdapter.getAll();
 
         assertEquals(2, result.size());
         verify(groupedDamageRepository).findAll();
@@ -39,7 +40,7 @@ class GroupedDamageServiceTest {
         List<GroupedDamage> mockList = Arrays.asList(new GroupedDamage());
         when(groupedDamageRepository.findByMunicipality(municipality)).thenReturn(mockList);
 
-        List<GroupedDamage> result = groupedDamageService.getByMunicipality(municipality);
+        List<GroupedDamage> result = groupedDamagePersistenceAdapter.getByMunicipality(municipality);
 
         assertEquals(1, result.size());
         verify(groupedDamageRepository).findByMunicipality(municipality);

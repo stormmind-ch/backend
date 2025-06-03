@@ -1,4 +1,4 @@
-package com.stormmind.infrastructure.exception;
+package com.stormmind.application.exception;
 
 public class GlobalExceptionHandler {
     //TODO

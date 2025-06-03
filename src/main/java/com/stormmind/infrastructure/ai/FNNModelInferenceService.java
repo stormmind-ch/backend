@@ -12,6 +12,7 @@ import ai.djl.inference.Predictor;
 import ai.djl.repository.zoo.Criteria;
 import ai.djl.repository.zoo.ZooModel;
 import ai.djl.repository.zoo.ModelZoo;
+import com.stormmind.application.ai.ModelInferenceService;
 import com.stormmind.domain.Inference;
 import com.stormmind.domain.FNNModelInference;
 import jakarta.annotation.PostConstruct;

@@ -2,11 +2,9 @@ package com.stormmind.application;
 
 import com.stormmind.application.forecast.request.ForecastRequest;
 import com.stormmind.application.forecast.ForecastRequestHandler;
+import com.stormmind.application.municipality.MunicipalityToClusterPort;
 import com.stormmind.domain.Forecast;
 import com.stormmind.domain.MunicipalityToCluster;
-import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
-import com.stormmind.presentation.dtos.response.forecast.ForecastDto;
-import com.stormmind.presentation.dtos.response.forecast.ForecastForAllMunicipalitiesDto;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +19,9 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class ForecastService {
 
-
-
     private final ForecastRequestHandler head;
     private final List<ForecastRequestHandler> chain;
-    private final MunicipalityToClusterService municipalityToClusterService;
+    private final MunicipalityToClusterPort municipalityToClusterPort;
 
     @PostConstruct
     void wireChain() {
@@ -33,7 +29,6 @@ public class ForecastService {
             chain.get(i).setNext(chain.get(i + 1));
         }
     }
-
 
     public Forecast getForecast(String model, String  queriedMunicipality) throws Exception {
         ForecastRequest forecastRequest = new ForecastRequest();
@@ -47,9 +42,9 @@ public class ForecastService {
     public List<Forecast> getForecastForAllMunicipalities(String model) throws Exception {
 
         List<MunicipalityToCluster> mappings =
-                municipalityToClusterService.getAllMunicipalitiesToCluster();
+                municipalityToClusterPort.getAllMunicipalityToCluster();
 
-        List<Forecast> forecasts = mappings.stream()
+        return mappings.stream()
                 .map(MunicipalityToCluster::getMunicipality)
                 .parallel()
                 .map(municipalityId -> {
@@ -62,7 +57,5 @@ public class ForecastService {
                 })
                 .filter(Objects::nonNull)
                 .toList();
-
-        return forecasts;
     }
 }

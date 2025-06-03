@@ -1,4 +1,4 @@
-package com.stormmind.application.repositories;
+package com.stormmind.infrastructure.repositories;
 
 import com.stormmind.domain.GroupedDamage;
 import org.springframework.data.jpa.repository.JpaRepository;

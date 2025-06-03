@@ -7,13 +7,13 @@ import com.stormmind.presentation.dtos.response.forecast.ForecastForAllMunicipal
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @CrossOrigin(origins = {
         "https://stormmind.ch",
-        "https://www.stormmind.ch"
+        "https://www.stormmind.ch",
+        "http://localhost:5173"
 })
 @RequestMapping("/api/forecast")
 @Slf4j

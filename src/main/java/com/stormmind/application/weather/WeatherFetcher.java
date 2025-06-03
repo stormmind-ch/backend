@@ -1,8 +1,7 @@
-package com.stormmind.infrastructure.weather_api;
+package com.stormmind.application.weather;
 
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.WeatherData;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 
 public interface WeatherFetcher {
     WeatherData fetch(Municipality targetMunicipality, Municipality centroidMunicipality);

@@ -1,6 +1,6 @@
 package com.stormmind.presentation;
 
-import com.stormmind.infrastructure.services.persistence.GroupedDamageService;
+import com.stormmind.infrastructure.persistence.GroupedDamagePersistenceAdapter;
 import com.stormmind.presentation.dtos.response.groupedDamage.AllGroupedDamageDto;
 import com.stormmind.presentation.dtos.response.groupedDamage.GroupedDamageDto;
 import org.springframework.http.ResponseEntity;
@@ -15,20 +15,21 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin(origins = {
         "https://stormmind.ch",
-        "https://www.stormmind.ch"
+        "https://www.stormmind.ch",
+        "http://localhost:5173"
 })
 @RequestMapping("/api/groupeddamage")
 public class GroupedDamageController {
 
-    private final GroupedDamageService groupedDamageService;
+    private final GroupedDamagePersistenceAdapter groupedDamagePersistenceAdapter;
 
-    public GroupedDamageController(GroupedDamageService groupedDamageService) {
-        this.groupedDamageService = groupedDamageService;
+    public GroupedDamageController(GroupedDamagePersistenceAdapter groupedDamagePersistenceAdapter) {
+        this.groupedDamagePersistenceAdapter = groupedDamagePersistenceAdapter;
     }
 
     @GetMapping("/all")
     public ResponseEntity<AllGroupedDamageDto> getAllDamages(){
-        List<GroupedDamageDto> damageDtos = groupedDamageService.getAll().stream()
+        List<GroupedDamageDto> damageDtos = groupedDamagePersistenceAdapter.getAll().stream()
                 .map(GroupedDamageDto::new)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(new AllGroupedDamageDto(damageDtos));

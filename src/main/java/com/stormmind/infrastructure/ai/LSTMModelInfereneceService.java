@@ -1,5 +1,6 @@
 package com.stormmind.infrastructure.ai;
 
+import com.stormmind.application.ai.ModelInferenceService;
 import com.stormmind.domain.Inference;
 import org.springframework.stereotype.Service;
 
