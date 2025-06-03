@@ -33,7 +33,7 @@ public class ForecastController {
     }
 
     @GetMapping("/allmunicipalities/{model}")
-    private ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(@PathVariable String model) throws Exception {
+    private ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(@PathVariable String model) {
         log.info("Got request for all municipalities, with PathVariable: {}", model);
         List<Forecast> forecastList = forecastService.getForecastForAllMunicipalities(model);
         List<ForecastDto> forecastDtoList = forecastList.stream().map(ForecastDto::new).toList();
