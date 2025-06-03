@@ -39,7 +39,7 @@ public class ForecastService {
     }
 
     @Cacheable(cacheNames = "forecast-all-municipalities")
-    public List<Forecast> getForecastForAllMunicipalities(String model) throws Exception {
+    public List<Forecast> getForecastForAllMunicipalities(String model) {
 
         List<MunicipalityToCluster> mappings =
                 municipalityToClusterPort.getAllMunicipalityToCluster();

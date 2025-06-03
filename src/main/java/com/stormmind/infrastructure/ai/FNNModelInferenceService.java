@@ -93,8 +93,7 @@ public class FNNModelInferenceService implements ModelInferenceService {
         public Float processOutput(TranslatorContext ctx, NDList list) {
             NDArray logits = list.singletonOrThrow();
             NDArray probs = logits.softmax(-1);
-            float probClass1 = probs.getFloat(1);
-            return  probClass1;
+            return probs.getFloat(1);
         }
 
         private float[] fnnModelPromptToFLoatArray(FNNModelInference fnnModelInference){

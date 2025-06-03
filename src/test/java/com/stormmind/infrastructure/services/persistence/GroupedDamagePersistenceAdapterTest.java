@@ -37,7 +37,7 @@ class GroupedDamagePersistenceAdapterTest {
     @Test
     void testGetByMunicipality() {
         String municipality = "Berlin";
-        List<GroupedDamage> mockList = Arrays.asList(new GroupedDamage());
+        List<GroupedDamage> mockList = List.of(new GroupedDamage());
         when(groupedDamageRepository.findByMunicipality(municipality)).thenReturn(mockList);
 
         List<GroupedDamage> result = groupedDamagePersistenceAdapter.getByMunicipality(municipality);

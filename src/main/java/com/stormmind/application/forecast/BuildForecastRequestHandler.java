@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 public class BuildForecastRequestHandler extends  AbstractForecastHandler{
 
     @Override
-    protected void doHandle(ForecastRequest forecastRequest) throws Exception {
+    protected void doHandle(ForecastRequest forecastRequest) {
         Forecast forecast = forecastRequest.getForecast();
         forecastRequest.setForecast(forecast);
     }

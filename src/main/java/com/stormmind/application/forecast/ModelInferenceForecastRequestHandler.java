@@ -21,7 +21,7 @@ public class ModelInferenceForecastRequestHandler extends AbstractForecastHandle
     protected void doHandle(ForecastRequest forecastRequest) throws Exception {
         ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(forecastRequest.getModel());
         Inference inference = WeatherDataDtoToInferenceService.weatherDataDTOToInference(forecastRequest.getWeatherData());
-        Float prediction = modelInferenceService.predict(inference);
+        float prediction = modelInferenceService.predict(inference);
         forecastRequest.setForecast(new Forecast(prediction, forecastRequest.getTargetMunicipality()));
     }
 }
