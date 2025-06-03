@@ -2,6 +2,7 @@ package com.stormmind.application;
 
 import com.stormmind.application.forecast.request.ForecastRequest;
 import com.stormmind.application.forecast.ForecastRequestHandler;
+import com.stormmind.domain.Forecast;
 import com.stormmind.domain.MunicipalityToCluster;
 import com.stormmind.infrastructure.services.persistence.MunicipalityToClusterService;
 import com.stormmind.presentation.dtos.response.forecast.ForecastDto;
@@ -34,21 +35,21 @@ public class ForecastService {
     }
 
 
-    public ForecastDto getForecast(String model, String  queriedMunicipality) throws Exception {
+    public Forecast getForecast(String model, String  queriedMunicipality) throws Exception {
         ForecastRequest forecastRequest = new ForecastRequest();
         forecastRequest.setModel(model);
         forecastRequest.setQueriedMunicipality(queriedMunicipality);
         head.handle(forecastRequest);
-        return forecastRequest.getResult();
+        return forecastRequest.getForecast();
     }
 
     @Cacheable(cacheNames = "forecast-all-municipalities")
-    public ForecastForAllMunicipalitiesDto getForecastForAllMunicipalities(String model) throws Exception {
+    public List<Forecast> getForecastForAllMunicipalities(String model) throws Exception {
 
         List<MunicipalityToCluster> mappings =
                 municipalityToClusterService.getAllMunicipalitiesToCluster();
 
-        List<ForecastDto> forecasts = mappings.stream()
+        List<Forecast> forecasts = mappings.stream()
                 .map(MunicipalityToCluster::getMunicipality)
                 .parallel()
                 .map(municipalityId -> {
@@ -62,6 +63,6 @@ public class ForecastService {
                 .filter(Objects::nonNull)
                 .toList();
 
-        return new ForecastForAllMunicipalitiesDto(forecasts);
+        return forecasts;
     }
 }

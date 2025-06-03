@@ -1,5 +1,7 @@
 package com.stormmind.presentation.dtos.intern;
 
+import com.stormmind.domain.WeatherValue;
+
 import java.util.List;
 
 /**
@@ -13,9 +15,6 @@ import java.util.List;
  */
 
 public record WeatherValueDTO(
-        List<Double> temperature,
-        List<Double> sunshine,
-        List<Double> rain,
-        List<Double> snow
+        WeatherValue weatherValue
 ) {
 }

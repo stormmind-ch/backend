@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.stormmind.domain.Duration;
 import com.stormmind.domain.Municipality;
+import com.stormmind.domain.WeatherData;
+import com.stormmind.domain.WeatherValue;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import jakarta.annotation.PostConstruct;
@@ -50,7 +52,7 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
         System.out.println(">>> API KEY: " + apiKey);
     }
 
-    public WeatherValueDTO fetchData(URL url){
+    public WeatherValue fetchData(URL url){
         try {
             log.info("Open Meteo API request to URL: {}", url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -84,8 +86,7 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
                         jsonObject.getAsJsonArray("sunshine_duration"), new TypeToken<List<Double>>() {}.getType()
                 );
 
-                return new WeatherValueDTO(
-                        temperature_list,//temperature
+                return new WeatherValue(temperature_list,//temperature
                         sunshine_list,//rain
                         rain_list,//snow
                         snow_list//sunshine
@@ -96,7 +97,7 @@ public abstract class AbstractOpenMeteoWeatherFetcher implements WeatherFetcher{
         }
         return null;
     }
-    public abstract WeatherDataDTO fetch(Municipality targetMunicipality, Municipality centroidMunicipality);
+    public abstract WeatherData fetch(Municipality targetMunicipality, Municipality centroidMunicipality);
 
     /**
      *

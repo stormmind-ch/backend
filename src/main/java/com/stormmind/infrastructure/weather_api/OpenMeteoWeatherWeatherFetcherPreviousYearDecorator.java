@@ -1,6 +1,8 @@
 package com.stormmind.infrastructure.weather_api;
 
 import com.stormmind.domain.Municipality;
+import com.stormmind.domain.WeatherData;
+import com.stormmind.domain.WeatherValue;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,14 +27,14 @@ public class OpenMeteoWeatherWeatherFetcherPreviousYearDecorator extends Abstrac
         this.previousYearWeatherFetcher = openMeteoWeatherFetcherPreviousMonthDecorator;
     }
     @Cacheable(cacheNames = "weather-by-cluster", key = "#centroidMunicipality.name")
-    public WeatherDataDTO fetch(Municipality targetMunicipality, Municipality centroidMunicipality) {
-        WeatherDataDTO weatherDataDTO = previousYearWeatherFetcher.fetch(targetMunicipality, centroidMunicipality);
+    public WeatherData fetch(Municipality targetMunicipality, Municipality centroidMunicipality) {
+        WeatherData weatherData = previousYearWeatherFetcher.fetch(targetMunicipality, centroidMunicipality);
          //weatherData for the -5x weeks.
         for(int i = 4; i >= 0; i--){
             URL url = buildUrl(centroidMunicipality,-(52+i));
-            WeatherValueDTO weatherValueDTO = this.fetchData(url);
-            weatherDataDTO.history().addFirst(weatherValueDTO);
+            WeatherValue weatherValue = this.fetchData(url);
+            weatherData.getHistory().addFirst(weatherValue);
         }
-        return weatherDataDTO;
+        return weatherData;
     }
 }

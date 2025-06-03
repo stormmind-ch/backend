@@ -1,6 +1,7 @@
 package com.stormmind.infrastructure.weather_api;
 
 import com.stormmind.domain.Municipality;
+import com.stormmind.domain.WeatherData;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.annotation.Primary;
@@ -18,9 +19,9 @@ public class OpenMeteoWeatherWeatherFetcherCurrentWeek extends AbstractOpenMeteo
 
     @Override
     @Cacheable(cacheNames = "weather-by-cluster", key = "#centroidMunicipality.name")
-    public WeatherDataDTO fetch(Municipality targetMunicipality, Municipality centroidMunicipality) {
+    public WeatherData fetch(Municipality targetMunicipality, Municipality centroidMunicipality) {
         URL url = buildUrl(centroidMunicipality, 0);
-        return new WeatherDataDTO(
+        return new WeatherData(
                 targetMunicipality.getName(),
                 centroidMunicipality.getName(),
                 new ArrayList<>(List.of(this.fetchData(url))),

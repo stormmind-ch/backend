@@ -1,6 +1,7 @@
 package com.stormmind.application.forecast;
 
 import com.stormmind.application.forecast.request.ForecastRequest;
+import com.stormmind.domain.Forecast;
 import com.stormmind.presentation.dtos.response.forecast.ForecastDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,7 @@ public class BuildDtoForecastRequestHandler extends  AbstractForecastHandler{
 
     @Override
     protected void doHandle(ForecastRequest forecastRequest) throws Exception {
-        ForecastDto forecastDto = new ForecastDto(forecastRequest.getTargetMunicipality(), forecastRequest.getPrediction());
-        forecastRequest.setResult(forecastDto);
+        Forecast forecast = forecastRequest.getForecast();
+        forecastRequest.setForecast(forecast);
     }
 }

@@ -22,7 +22,7 @@ public class DamageController {
     }
 
     @GetMapping("/alldamages")
-    public ResponseEntity<AllDamagesDto> getAllEmployees(){
+    public ResponseEntity<AllDamagesDto> getAllDamages(){
         return ResponseEntity.ok().body(new AllDamagesDto(damageService.getAllDamages()));
     }
 

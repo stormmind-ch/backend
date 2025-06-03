@@ -14,7 +14,7 @@ public abstract class AbstractForecastHandler implements ForecastRequestHandler 
     @Override
     public void handle(ForecastRequest forecastRequest) throws  Exception{
         doHandle(forecastRequest);
-        if (next != null && forecastRequest.getResult() == null) {
+        if (next != null && forecastRequest.getForecast() == null) {
             next.handle(forecastRequest);
         }
     }

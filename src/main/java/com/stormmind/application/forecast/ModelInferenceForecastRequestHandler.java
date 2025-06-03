@@ -2,6 +2,7 @@ package com.stormmind.application.forecast;
 
 import com.stormmind.application.WeatherDataDtoToInferenceService;
 import com.stormmind.application.forecast.request.ForecastRequest;
+import com.stormmind.domain.Forecast;
 import com.stormmind.domain.Inference;
 import com.stormmind.infrastructure.ai.ModelInferenceService;
 import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
@@ -21,6 +22,6 @@ public class ModelInferenceForecastRequestHandler extends AbstractForecastHandle
         ModelInferenceService modelInferenceService = modelInferenceServiceFactory.getModelInferenceService(forecastRequest.getModel());
         Inference inference = WeatherDataDtoToInferenceService.weatherDataDTOToInference(forecastRequest.getWeatherData());
         Float prediction = modelInferenceService.predict(inference);
-        forecastRequest.setPrediction(prediction);
+        forecastRequest.setForecast(new Forecast(prediction, forecastRequest.getTargetMunicipality()));
     }
 }

@@ -1,6 +1,7 @@
 package com.stormmind.application.forecast;
 
 import com.stormmind.application.forecast.request.ForecastRequest;
+import com.stormmind.domain.WeatherData;
 import com.stormmind.infrastructure.weather_api.OpenMeteoWeatherFetcherFactory;
 import com.stormmind.infrastructure.weather_api.WeatherFetcher;
 import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
@@ -26,7 +27,7 @@ public class WeatherForecastRequestHandler extends AbstractForecastHandler{
             log.error("Model was not found with name: {}", forecastRequest.getModel());
             throw new IOException("Model not found with name " + forecastRequest.getModel());
         }
-        WeatherDataDTO weatherDataDTO = weatherFetcher.fetch(forecastRequest.getTargetMunicipality(), forecastRequest.getCentroidMunicipality());
-        forecastRequest.setWeatherData(weatherDataDTO);
+        WeatherData weatherData = weatherFetcher.fetch(forecastRequest.getTargetMunicipality(), forecastRequest.getCentroidMunicipality());
+        forecastRequest.setWeatherData(weatherData);
     }
 }
