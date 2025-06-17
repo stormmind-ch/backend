@@ -28,7 +28,7 @@ class MunicipalityToClusterPersistenceAdapterTest {
         // Arrange
         String municipalityName = "TestTown";
         Municipality municipality = new Municipality(municipalityName, new Coordinates(1.0f, 2.0f));
-        MunicipalityToCluster expected = new MunicipalityToCluster(municipality.getName(), "cluster-1");
+        MunicipalityToCluster expected = new MunicipalityToCluster(municipality.getName(), "cluster-1", "cluster-3");
 
         when(repository.getMunicipalityToCluster6ByMunicipality(municipalityName)).thenReturn(expected);
 
@@ -37,7 +37,7 @@ class MunicipalityToClusterPersistenceAdapterTest {
 
         // Assert
         assertNotNull(result);
-        assertEquals("cluster-1", result.getCenter());// Municipality is ID
+        assertEquals("cluster-1", result.getCenter_6());// Municipality is ID
         assertEquals(municipalityName, result.getMunicipality());
         verify(repository).getMunicipalityToCluster6ByMunicipality(municipalityName);
     }
@@ -48,8 +48,8 @@ class MunicipalityToClusterPersistenceAdapterTest {
         Municipality munA = new Municipality("A", new Coordinates(1f, 2f));
         Municipality munB = new Municipality("B", new Coordinates(3f, 4f));
         List<MunicipalityToCluster> mockList = List.of(
-                new MunicipalityToCluster(munA.getName(), "cluster-A"),
-                new MunicipalityToCluster(munB.getName(), "cluster-B")
+                new MunicipalityToCluster(munA.getName(), "cluster-A", "cluster-C"),
+                new MunicipalityToCluster(munB.getName(), "cluster-B", "cluster-C")
         );
 
         when(repository.findAll()).thenReturn(mockList);

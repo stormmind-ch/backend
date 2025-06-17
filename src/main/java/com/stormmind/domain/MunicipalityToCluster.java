@@ -20,8 +20,11 @@ public class MunicipalityToCluster {
 
     @Setter
     @Column(name = "center_municipality_6")
-    private String center;
+    private String center_6;
 
-    // TODO: If there will be further models with differenct clusters, this entity will be extended.
+    @Setter
+    @Column(name = "center_municipality_3")
+    private String center_3;
+
 }
 

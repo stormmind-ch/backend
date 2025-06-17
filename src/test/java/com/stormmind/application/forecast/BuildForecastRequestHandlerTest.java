@@ -21,7 +21,7 @@ class BuildForecastRequestHandlerTest {
     @Test
     void testDoHandle_setsForecastCorrectly() throws Exception {
         // Arrange
-        Forecast forecast = new Forecast( 0.4f, new Municipality("ort", new Coordinates( 11, 22)));
+        Forecast forecast = new Forecast(0.4f, new Municipality("ort", new Coordinates( 11, 22)), new Municipality("ort2", new Coordinates(11, 22)));
         ForecastRequest request = new ForecastRequest();
         request.setForecast(forecast);
 

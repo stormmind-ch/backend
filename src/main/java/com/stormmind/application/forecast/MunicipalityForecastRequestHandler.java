@@ -31,7 +31,7 @@ public class MunicipalityForecastRequestHandler extends AbstractForecastHandler{
             throw new IOException("Mapping for municipality " + forecastRequest.getQueriedMunicipality() + " not found");
         }
         Municipality targetMunicipality = municipalityPort.findByName(municipalityToCluster.getMunicipality());
-        Municipality centerMunicipality = municipalityPort.findByName(municipalityToCluster.getCenter());
+        Municipality centerMunicipality = municipalityPort.findByName(municipalityToCluster.getCenter_6());
         forecastRequest.setTargetMunicipality(targetMunicipality);
         forecastRequest.setCentroidMunicipality(centerMunicipality);
 

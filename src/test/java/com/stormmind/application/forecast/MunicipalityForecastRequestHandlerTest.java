@@ -33,7 +33,7 @@ class MunicipalityForecastRequestHandlerTest {
         Municipality queried = new Municipality("Queried", new Coordinates(1.0f, 2.0f));
         Municipality target = new Municipality("Target", new Coordinates(3.0f, 4.0f));
         Municipality center = new Municipality("Center", new Coordinates(5.0f, 6.0f));
-        MunicipalityToCluster mapping = new MunicipalityToCluster("Target", "Center");
+        MunicipalityToCluster mapping = new MunicipalityToCluster("Target", "Center", "Center3");
 
         ForecastRequest request = new ForecastRequest();
         request.setQueriedMunicipality(queried.getName());
