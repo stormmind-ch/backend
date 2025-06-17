@@ -22,6 +22,6 @@ public class ModelInferenceForecastRequestHandler extends AbstractForecastHandle
         ModelInferenceService modelInferenceService = modelInferenceServiceProvider.getModelInferenceService(forecastRequest.getModel());
         Inference inference = WeatherDataDtoToInferenceService.weatherDataDTOToInference(forecastRequest.getWeatherData());
         float prediction = modelInferenceService.predict(inference);
-        forecastRequest.setForecast(new Forecast(prediction, forecastRequest.getTargetMunicipality()));
+        forecastRequest.setForecast(new Forecast(prediction, forecastRequest.getCentroidMunicipality(), forecastRequest.getTargetMunicipality()));
     }
 }
