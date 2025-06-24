@@ -7,6 +7,7 @@ import com.stormmind.domain.Coordinates;
 import com.stormmind.domain.Forecast;
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.MunicipalityToCluster;
+import com.stormmind.infrastructure.ai.ClusterSize;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +43,7 @@ class ForecastServiceTest {
         }).when(headHandler).handle(any(ForecastRequest.class));
 
         // Act
-        Forecast result = forecastService.getForecast(model, municipalityId);
+        Forecast result = forecastService.getForecast(model, municipalityId, ClusterSize.SIX);
 
         // Assert
         assertNotNull(result);
@@ -65,13 +66,13 @@ class ForecastServiceTest {
 
         // getForecast() für A funktioniert
         Forecast forecastA = new Forecast(1.0f, munA, munA);
-        doReturn(forecastA).when(spyService).getForecast(model, "A");
+        doReturn(forecastA).when(spyService).getForecast(model, "A", ClusterSize.SIX);
 
         // getForecast() für B wirft Exception → soll zu null führen
-        doThrow(new RuntimeException("fail")).when(spyService).getForecast(model, "B");
+        doThrow(new RuntimeException("fail")).when(spyService).getForecast(model, "B", ClusterSize.SIX);
 
         // Act
-        List<Forecast> result = spyService.getForecastForAllMunicipalities(model);
+        List<Forecast> result = spyService.getForecastForAllMunicipalities(model, ClusterSize.SIX);
 
         // Assert
         assertEquals(1, result.size());

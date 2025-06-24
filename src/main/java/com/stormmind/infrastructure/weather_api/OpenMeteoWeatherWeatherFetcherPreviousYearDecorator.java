@@ -3,8 +3,6 @@ package com.stormmind.infrastructure.weather_api;
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.WeatherData;
 import com.stormmind.domain.WeatherValue;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
-import com.stormmind.presentation.dtos.intern.WeatherValueDTO;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +19,9 @@ public class OpenMeteoWeatherWeatherFetcherPreviousYearDecorator extends Abstrac
 
     // TODO CHANGE TO CORRECT MODEL
     public static final String BEAN_ID = "SEQ2SEQ";
-    private final OpenMeteoWeatherWeatherFetcherPreviousMonthDecorator previousYearWeatherFetcher;
+    private final OpenMeteoWeatherWeatherFetcherPrevious2WeeksDecorator previousYearWeatherFetcher;
 
-    public OpenMeteoWeatherWeatherFetcherPreviousYearDecorator(OpenMeteoWeatherWeatherFetcherPreviousMonthDecorator openMeteoWeatherFetcherPreviousMonthDecorator) {
+    public OpenMeteoWeatherWeatherFetcherPreviousYearDecorator(OpenMeteoWeatherWeatherFetcherPrevious2WeeksDecorator openMeteoWeatherFetcherPreviousMonthDecorator) {
         this.previousYearWeatherFetcher = openMeteoWeatherFetcherPreviousMonthDecorator;
     }
     @Cacheable(cacheNames = "weather-by-cluster", key = "#centroidMunicipality.name")

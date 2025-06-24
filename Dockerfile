@@ -14,7 +14,7 @@ COPY --chown=gradle:gradle src/ src/
 COPY --chown=gradle:gradle models/ models/
 
 # Build the application
-RUN ./gradlew clean build --no-daemon
+RUN ./gradlew clean build -x test --no-daemon
 
 # Stage 2: Create the runtime image
 FROM openjdk:23

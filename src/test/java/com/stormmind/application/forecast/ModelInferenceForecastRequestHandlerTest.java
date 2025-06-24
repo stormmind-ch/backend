@@ -1,19 +1,20 @@
 package com.stormmind.application.forecast;
 
 import com.stormmind.application.WeatherDataDtoToInferenceService;
+import com.stormmind.application.ai.ModelInferenceService;
 import com.stormmind.application.forecast.request.ForecastRequest;
 import com.stormmind.domain.*;
-import com.stormmind.application.ai.ModelInferenceService;
+import com.stormmind.infrastructure.ai.ClusterSize;
 import com.stormmind.infrastructure.ai.ModelInferenceServiceFactory;
-import com.stormmind.presentation.dtos.intern.WeatherDataDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 
 import java.util.ArrayList;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 class ModelInferenceForecastRequestHandlerTest {
 
@@ -35,7 +36,7 @@ class ModelInferenceForecastRequestHandlerTest {
         float predictedValue = 42.0f;
         WeatherData weatherData = new WeatherData("mun", "cent", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 
-        Inference inference = WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherData); // Dummy-Inference
+        Inference inference = WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherData, "FNN"); // Dummy-Inference
         Municipality municipality = new Municipality("TestTown", new Coordinates(1.0f, 2.0f));
 
         ForecastRequest request = new ForecastRequest();
@@ -45,10 +46,10 @@ class ModelInferenceForecastRequestHandlerTest {
 
         // Static mocking: WeatherDataDtoToInferenceService.weatherDataDTOToInference(...)
         try (MockedStatic<WeatherDataDtoToInferenceService> mockedStatic = mockStatic(WeatherDataDtoToInferenceService.class)) {
-            mockedStatic.when(() -> WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherData))
+            mockedStatic.when(() -> WeatherDataDtoToInferenceService.weatherDataDTOToInference(weatherData, "FNN"))
                     .thenReturn(inference);
 
-            when(modelInferenceServiceFactory.getModelInferenceService(modelName)).thenReturn(modelInferenceService);
+            when(modelInferenceServiceFactory.getModelInferenceService(modelName, ClusterSize.SIX)).thenReturn(modelInferenceService);
             when(modelInferenceService.predict(inference)).thenReturn(predictedValue);
 
             // Act
@@ -61,7 +62,7 @@ class ModelInferenceForecastRequestHandlerTest {
             assertEquals(municipality, forecast.getMunicipality());
 
             // Verify interactions
-            verify(modelInferenceServiceFactory).getModelInferenceService(modelName);
+            verify(modelInferenceServiceFactory).getModelInferenceService(modelName, ClusterSize.SIX);
             verify(modelInferenceService).predict(inference);
         }
     }

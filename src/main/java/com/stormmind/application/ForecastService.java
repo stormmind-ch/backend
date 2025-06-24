@@ -5,6 +5,7 @@ import com.stormmind.application.forecast.ForecastRequestHandler;
 import com.stormmind.application.municipality.MunicipalityToClusterPort;
 import com.stormmind.domain.Forecast;
 import com.stormmind.domain.MunicipalityToCluster;
+import com.stormmind.infrastructure.ai.ClusterSize;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,16 +31,17 @@ public class ForecastService {
         }
     }
 
-    public Forecast getForecast(String model, String  queriedMunicipality) throws Exception {
+    public Forecast getForecast(String model, String  queriedMunicipality, ClusterSize clusterSize) throws Exception {
         ForecastRequest forecastRequest = new ForecastRequest();
         forecastRequest.setModel(model);
+        forecastRequest.setClusterSize(clusterSize);
         forecastRequest.setQueriedMunicipality(queriedMunicipality);
         head.handle(forecastRequest);
         return forecastRequest.getForecast();
     }
 
     @Cacheable(cacheNames = "forecast-all-municipalities")
-    public List<Forecast> getForecastForAllMunicipalities(String model) {
+    public List<Forecast> getForecastForAllMunicipalities(String model, ClusterSize clusterSize) {
 
         List<MunicipalityToCluster> mappings =
                 municipalityToClusterPort.getAllMunicipalityToCluster();
@@ -49,7 +51,7 @@ public class ForecastService {
                 .parallel()
                 .map(municipalityId -> {
                     try {
-                        return getForecast(model, municipalityId);
+                        return getForecast(model, municipalityId, clusterSize);
                     } catch (Exception ex) {
                         log.error("Could not build forecast for: {}", municipalityId, ex);
                         return null;

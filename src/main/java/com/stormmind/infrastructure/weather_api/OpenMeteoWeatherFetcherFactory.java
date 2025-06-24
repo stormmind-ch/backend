@@ -14,6 +14,9 @@ public class OpenMeteoWeatherFetcherFactory implements WeatherFetcherProvider {
 
     @Override
     public WeatherFetcher getWeatherFetcher(String model){
+        if ("LSTM".equalsIgnoreCase(model) || "TRANSFORMER".equalsIgnoreCase(model)) {
+            return weatherFetcherMap.get("SEQUENCE_MODELS");
+        }
         return weatherFetcherMap.get(model);
     }
 }

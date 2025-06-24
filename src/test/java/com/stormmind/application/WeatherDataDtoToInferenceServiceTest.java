@@ -38,7 +38,7 @@ class WeatherDataDtoToInferenceServiceTest {
         // Rain: 2+3+1+4 = 10.0
 
         // Act
-        Inference result = WeatherDataDtoToInferenceService.weatherDataDTOToInference(data);
+        Inference result = WeatherDataDtoToInferenceService.weatherDataDTOToInference(data, "FNN");
 
         // Assert
         assertTrue(result instanceof FNNModelInference);
@@ -56,7 +56,7 @@ class WeatherDataDtoToInferenceServiceTest {
         WeatherData data = new WeatherData("mun","cent",new ArrayList<>(),new ArrayList<>(),new ArrayList<>());
 
         // Act
-        Inference result = WeatherDataDtoToInferenceService.weatherDataDTOToInference(data);
+        Inference result = WeatherDataDtoToInferenceService.weatherDataDTOToInference(data, "FNN");
 
         // Assert
         FNNModelInference fnn = (FNNModelInference) result;

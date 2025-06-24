@@ -19,6 +19,7 @@ public class CacheConfig {
                 .maximumSize(5_000) // max cache size. After 5k entries, the cache deletes some values.
                 .expireAfterWrite(Duration.ofDays(1));
         CaffeineCacheManager mgr = new CaffeineCacheManager("weather-by-cluster",
+                "weather-by-cluster-2",
                 "forecast-all-municipalities",
                 "inference"
 

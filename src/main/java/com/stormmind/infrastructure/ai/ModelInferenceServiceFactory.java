@@ -5,26 +5,31 @@ import com.stormmind.application.ai.ModelInferenceService;
 import com.stormmind.application.ai.ModelInferenceServiceProvider;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
 public class ModelInferenceServiceFactory implements ModelInferenceServiceProvider {
 
-    private final FNNModelInferenceService fnnModelInferenceService;
-    private final LSTMModelInfereneceService lstmModelInfereneceService;
 
-    public ModelInferenceServiceFactory(
-            FNNModelInferenceService fnnModelInferenceService,
-            LSTMModelInfereneceService lstmModelInfereneceService
-    ) {
-        this.fnnModelInferenceService = fnnModelInferenceService;
-        this.lstmModelInfereneceService = lstmModelInfereneceService;
+    private final Map<String, ModelInferenceService> cache = new ConcurrentHashMap<>();
+
+    @Override
+    public ModelInferenceService getModelInferenceService(String modelName, ClusterSize clusterSize) {
+        String key = modelName.toUpperCase() + "-" + clusterSize.name();
+        return cache.computeIfAbsent(key, k -> {
+            try {
+                return switch (modelName.toUpperCase()) {
+                    case "FNN" -> new FNNModelInferenceService(clusterSize);
+                    case "LSTM" -> new LSTMModelInferenceService(clusterSize);
+                    case "TRANSFORMER" -> new TransformerModelInferenceService(clusterSize);
+                    default -> throw new ModelNotFoundException("No model found with name: " + modelName);
+                };
+            } catch (Exception e) {
+                throw new RuntimeException("Could not create model service", e);
+            }
+        });
     }
 
-    public ModelInferenceService getModelInferenceService(String modelName) throws ModelNotFoundException {
-        return switch (modelName) {
-            case "FNN" -> fnnModelInferenceService;
-            case "LSTM" -> lstmModelInfereneceService;
-            default -> throw new ModelNotFoundException("No model found with name: " + modelName);
-        };
-    }
 }
 

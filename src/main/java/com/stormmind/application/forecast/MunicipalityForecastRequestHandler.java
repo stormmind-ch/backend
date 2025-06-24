@@ -5,6 +5,7 @@ import com.stormmind.application.municipality.MunicipalityPort;
 import com.stormmind.application.municipality.MunicipalityToClusterPort;
 import com.stormmind.domain.Municipality;
 import com.stormmind.domain.MunicipalityToCluster;
+import com.stormmind.infrastructure.ai.ClusterSize;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
@@ -31,7 +32,12 @@ public class MunicipalityForecastRequestHandler extends AbstractForecastHandler{
             throw new IOException("Mapping for municipality " + forecastRequest.getQueriedMunicipality() + " not found");
         }
         Municipality targetMunicipality = municipalityPort.findByName(municipalityToCluster.getMunicipality());
-        Municipality centerMunicipality = municipalityPort.findByName(municipalityToCluster.getCenter_6());
+        Municipality centerMunicipality;
+        if(forecastRequest.getClusterSize() == ClusterSize.SIX) {
+           centerMunicipality  = municipalityPort.findByName(municipalityToCluster.getCenter_6());
+        }else{
+            centerMunicipality  = municipalityPort.findByName(municipalityToCluster.getCenter_3());
+        }
         forecastRequest.setTargetMunicipality(targetMunicipality);
         forecastRequest.setCentroidMunicipality(centerMunicipality);
 
